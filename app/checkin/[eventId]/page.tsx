@@ -185,7 +185,8 @@ export default function CheckinPage({ params }: { params: { eventId: string } })
           {!scanning ? (
             <button
               onClick={startScanning}
-              className="w-full bg-primary hover:bg-primary-500 text-foreground py-4 rounded-lg font-semibold text-lg transition-colors"
+              className="w-full py-4 rounded-lg font-semibold text-lg transition-colors hover:opacity-90"
+              style={{ backgroundColor: '#C4F82A', color: '#0A0B0D' }}
             >
               Iniciar Scanner
             </button>
@@ -216,7 +217,8 @@ export default function CheckinPage({ params }: { params: { eventId: string } })
             />
             <button
               type="submit"
-              className="bg-primary hover:bg-primary-500 text-foreground px-6 py-3 rounded-lg font-semibold transition-colors"
+              className="px-6 py-3 rounded-lg font-semibold transition-colors hover:opacity-90"
+              style={{ backgroundColor: '#C4F82A', color: '#0A0B0D' }}
             >
               Confirmar
             </button>

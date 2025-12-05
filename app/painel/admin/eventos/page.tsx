@@ -31,7 +31,8 @@ export default async function EventosAdminPage() {
             </Link>
             <Link
               href="/painel/admin/eventos/novo"
-              className="bg-primary hover:bg-primary-500 text-foreground px-4 py-2 rounded-lg font-semibold transition-colors"
+              className="px-4 py-2 rounded-lg font-semibold transition-colors hover:opacity-90"
+              style={{ backgroundColor: '#C4F82A', color: '#0A0B0D' }}
             >
               + Novo Evento
             </Link>
@@ -102,7 +103,8 @@ export default async function EventosAdminPage() {
                   </Link>
                   <Link
                     href={`/checkin/${event.id}`}
-                    className="px-4 py-2 bg-primary hover:bg-primary-500 text-foreground rounded-lg text-sm transition-colors"
+                    className="px-4 py-2 rounded-lg text-sm transition-colors hover:opacity-90"
+                    style={{ backgroundColor: '#C4F82A', color: '#0A0B0D' }}
                   >
                     Check-in
                   </Link>
@@ -115,7 +117,8 @@ export default async function EventosAdminPage() {
             <p className="text-placeholder mb-4">Nenhum evento criado ainda</p>
             <Link
               href="/painel/admin/eventos/novo"
-              className="inline-block bg-primary hover:bg-primary-500 text-foreground px-6 py-3 rounded-lg transition-colors"
+              className="inline-block px-6 py-3 rounded-lg transition-colors hover:opacity-90"
+              style={{ backgroundColor: '#C4F82A', color: '#0A0B0D' }}
             >
               Criar Primeiro Evento
             </Link>

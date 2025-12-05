@@ -103,7 +103,8 @@ export default async function AdminDashboard() {
 
           <Link
             href="/painel/admin/eventos/novo"
-            className="btn-primary rounded-2xl p-6 relative overflow-hidden group"
+            className="rounded-2xl p-6 relative overflow-hidden group transition-all hover:shadow-glow-md hover:scale-105"
+            style={{ backgroundColor: '#C4F82A', color: '#0A0B0D' }}
           >
             <div className="absolute -top-2 -right-2 text-6xl font-bold text-white/20">02.</div>
             <div className="relative z-10">

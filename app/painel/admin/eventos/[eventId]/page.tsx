@@ -66,7 +66,8 @@ export default async function EventoAdminPage({ params }: { params: { eventId: s
               </Link>
               <Link
                 href={`/checkin/${params.eventId}`}
-                className="px-4 py-2 bg-primary hover:bg-primary-500 text-foreground rounded-lg text-sm transition-colors"
+                className="px-4 py-2 rounded-lg text-sm transition-colors hover:opacity-90"
+                style={{ backgroundColor: '#C4F82A', color: '#0A0B0D' }}
               >
                 Check-in
               </Link>
@@ -206,7 +207,8 @@ export default async function EventoAdminPage({ params }: { params: { eventId: s
           </Link>
           <Link
             href={`/checkin/${params.eventId}`}
-            className="bg-primary hover:bg-primary-500 text-foreground p-6 rounded-lg text-center font-semibold transition-colors"
+            className="p-6 rounded-lg text-center font-semibold transition-colors hover:opacity-90"
+            style={{ backgroundColor: '#C4F82A', color: '#0A0B0D' }}
           >
             Sistema de Check-in
           </Link>

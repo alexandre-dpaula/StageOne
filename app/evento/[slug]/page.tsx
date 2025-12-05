@@ -61,7 +61,7 @@ export default async function EventoPage({ params }: { params: { slug: string } 
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-8">
           <div className="max-w-7xl mx-auto">
-            <div className="inline-block bg-primary text-foreground px-3 py-1 rounded-full text-sm font-semibold mb-3">
+            <div className="inline-block px-3 py-1 rounded-full text-sm font-semibold mb-3" style={{ backgroundColor: '#C4F82A', color: '#0A0B0D' }}>
               {event.category}
             </div>
             <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-2">{event.title}</h1>
