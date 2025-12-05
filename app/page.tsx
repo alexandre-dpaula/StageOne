@@ -145,7 +145,7 @@ export default async function HomePage() {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-placeholder text-sm">Localização</span>
-                      <span className="text-foreground font-bold">{featuredEvent.city || 'Online'}</span>
+                      <span className="text-foreground font-bold">{featuredEvent.location_name}</span>
                     </div>
                     <div className="flex items-center justify-between pt-3 border-t border-border">
                       <span className="text-placeholder text-sm">A partir de</span>
