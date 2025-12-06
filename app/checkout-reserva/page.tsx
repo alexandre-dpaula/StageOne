@@ -58,6 +58,21 @@ export default function CheckoutReservaPage() {
         throw new Error('Dados da reserva não encontrados')
       }
 
+      // MODO TESTE: Pular processamento de pagamento e ir direto para criação de evento
+      // Simular que a reserva foi criada com sucesso
+      const mockBookingId = 'test-booking-' + Date.now()
+
+      localStorage.setItem('booking_id', mockBookingId)
+      localStorage.removeItem('reserva')
+
+      // Pequeno delay para simular processamento
+      await new Promise(resolve => setTimeout(resolve, 1000))
+
+      // Redirecionar para criar evento
+      window.location.href = '/painel/admin/eventos/novo?from_booking=true'
+
+      /* CÓDIGO REAL (DESCOMENTADO QUANDO TERMINAR OS TESTES):
+
       // Processar pagamento de reserva
       const response = await fetch('/api/bookings/create', {
         method: 'POST',
@@ -87,6 +102,7 @@ export default function CheckoutReservaPage() {
 
       // Redirecionar para criar evento
       window.location.href = '/painel/admin/eventos/novo?from_booking=true'
+      */
     } catch (err: any) {
       setError(err.message || 'Erro ao processar pagamento')
     } finally {

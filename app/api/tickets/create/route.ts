@@ -1,6 +1,13 @@
 import { createClient } from '@/lib/supabase/server'
 import { generateQRToken } from '@/lib/utils'
 import { NextRequest, NextResponse } from 'next/server'
+import {
+  sendTicketConfirmationEmail,
+  generateQRCodeUrl,
+  formatEventDate,
+  formatEventTime,
+  formatPrice,
+} from '@/lib/email/send-ticket-email'
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,6 +28,13 @@ export async function POST(request: NextRequest) {
     // Validate required fields
     if (!event_id || !ticket_type_id || !buyer_name || !buyer_email) {
       return NextResponse.json({ error: 'Dados incompletos' }, { status: 400 })
+    }
+
+    // Get event details
+    const { data: event } = await supabase.from('events').select('*').eq('id', event_id).single()
+
+    if (!event) {
+      return NextResponse.json({ error: 'Evento não encontrado' }, { status: 404 })
     }
 
     // Check if ticket type still has availability
@@ -59,6 +73,33 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) throw error
+
+    // Update sold quantity
+    await supabase
+      .from('tickets_types')
+      .update({ sold_quantity: ticketType.sold_quantity + 1 })
+      .eq('id', ticket_type_id)
+
+    // Send confirmation email
+    try {
+      await sendTicketConfirmationEmail({
+        to: buyer_email,
+        participantName: buyer_name,
+        eventTitle: event.title,
+        eventSubtitle: event.subtitle || '',
+        eventDate: formatEventDate(event.start_datetime),
+        eventTime: formatEventTime(event.start_datetime),
+        locationName: event.location_name,
+        locationAddress: event.address,
+        ticketTypeName: ticketType.name,
+        ticketPrice: formatPrice(ticketType.price),
+        qrCodeUrl: generateQRCodeUrl(ticket.qr_code_token),
+        ticketId: ticket.id,
+      })
+    } catch (emailError) {
+      console.error('Erro ao enviar email, mas ticket foi criado:', emailError)
+      // Não retornar erro pois o ticket foi criado com sucesso
+    }
 
     return NextResponse.json({ success: true, ticket }, { status: 201 })
   } catch (error: any) {

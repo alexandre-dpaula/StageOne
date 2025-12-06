@@ -65,8 +65,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // If booking_id is provided, validate the booking
-    if (booking_id) {
+    // If booking_id is provided, validate the booking (skip for test bookings)
+    if (booking_id && !booking_id.startsWith('test-booking-')) {
       const { data: booking, error: bookingError } = await supabase
         .from('space_bookings')
         .select('*')
@@ -123,8 +123,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: eventError.message }, { status: 500 })
     }
 
-    // If booking_id exists, link the event to the booking
-    if (booking_id) {
+    // If booking_id exists, link the event to the booking (skip for test bookings)
+    if (booking_id && !booking_id.startsWith('test-booking-')) {
       const { error: updateBookingError } = await supabase
         .from('space_bookings')
         .update({ event_id: event.id })
