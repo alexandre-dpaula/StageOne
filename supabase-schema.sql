@@ -357,6 +357,79 @@ CREATE POLICY "Event creators can manage materials" ON public.event_materials
   );
 
 -- ============================================================================
+-- SPACE BOOKINGS TABLE (Reservas de Espaço)
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS public.space_bookings (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  event_id UUID UNIQUE REFERENCES public.events(id) ON DELETE SET NULL,
+
+  -- Booking details
+  hours INTEGER NOT NULL CHECK (hours >= 1),
+  booking_date TIMESTAMP WITH TIME ZONE NOT NULL,
+
+  -- Addons
+  has_audiovisual BOOLEAN DEFAULT FALSE,
+  has_coverage BOOLEAN DEFAULT FALSE,
+  has_coffee_break BOOLEAN DEFAULT FALSE,
+
+  -- Pricing
+  base_price DECIMAL(10,2) NOT NULL,
+  addons_price DECIMAL(10,2) NOT NULL DEFAULT 0,
+  discount_percentage INTEGER DEFAULT 0 CHECK (discount_percentage >= 0 AND discount_percentage <= 100),
+  total_price DECIMAL(10,2) NOT NULL,
+
+  -- Payment
+  payment_status TEXT NOT NULL DEFAULT 'PENDING' CHECK (payment_status IN ('PENDING', 'PAID', 'CANCELLED', 'REFUNDED')),
+  payment_method TEXT,
+  payment_date TIMESTAMP WITH TIME ZONE,
+  payment_id TEXT,
+
+  -- Status
+  status TEXT NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED')),
+  confirmation_date TIMESTAMP WITH TIME ZONE,
+
+  -- Metadata
+  notes TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+-- Indexes
+CREATE INDEX idx_space_bookings_user_id ON public.space_bookings(user_id);
+CREATE INDEX idx_space_bookings_event_id ON public.space_bookings(event_id);
+CREATE INDEX idx_space_bookings_payment_status ON public.space_bookings(payment_status);
+CREATE INDEX idx_space_bookings_status ON public.space_bookings(status);
+CREATE INDEX idx_space_bookings_booking_date ON public.space_bookings(booking_date);
+
+-- Trigger for updated_at
+CREATE TRIGGER update_space_bookings_updated_at
+  BEFORE UPDATE ON public.space_bookings
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- RLS Policies for space_bookings
+ALTER TABLE public.space_bookings ENABLE ROW LEVEL SECURITY;
+
+-- Users can view their own bookings
+CREATE POLICY "Users can view own bookings" ON public.space_bookings
+  FOR SELECT USING (user_id = auth.uid());
+
+-- Users can create their own bookings
+CREATE POLICY "Users can create own bookings" ON public.space_bookings
+  FOR INSERT WITH CHECK (user_id = auth.uid());
+
+-- Users can update their own bookings (before confirmation)
+CREATE POLICY "Users can update own pending bookings" ON public.space_bookings
+  FOR UPDATE USING (user_id = auth.uid() AND status = 'PENDING');
+
+-- Admins can view and manage all bookings
+CREATE POLICY "Admins can manage all bookings" ON public.space_bookings
+  FOR ALL USING (
+    EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'ADMIN')
+  );
+
+-- ============================================================================
 -- SEED DATA (Optional - Usuário admin inicial)
 -- ============================================================================
 -- Após criar um usuário no Supabase Auth, execute:

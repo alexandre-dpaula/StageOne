@@ -33,6 +33,7 @@ export async function POST(request: NextRequest) {
       description,
       slug,
       category,
+      banner_url,
       start_datetime,
       capacity,
       location_name,
@@ -40,6 +41,7 @@ export async function POST(request: NextRequest) {
       city,
       state,
       is_published,
+      booking_id,
       modules,
       ticket_types,
     } = body
@@ -63,6 +65,36 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // If booking_id is provided, validate the booking
+    if (booking_id) {
+      const { data: booking, error: bookingError } = await supabase
+        .from('space_bookings')
+        .select('*')
+        .eq('id', booking_id)
+        .eq('user_id', user.id)
+        .single()
+
+      if (bookingError || !booking) {
+        return NextResponse.json({ error: 'Reserva não encontrada ou sem permissão' }, { status: 404 })
+      }
+
+      // Check if booking already has an event linked
+      if (booking.event_id) {
+        return NextResponse.json(
+          { error: 'Esta reserva já possui um evento vinculado. Cada reserva permite criar apenas 1 evento.' },
+          { status: 400 }
+        )
+      }
+
+      // Check if payment is completed
+      if (booking.payment_status !== 'PAID') {
+        return NextResponse.json(
+          { error: 'Pagamento da reserva ainda não foi confirmado' },
+          { status: 400 }
+        )
+      }
+    }
+
     // Create event
     const { data: event, error: eventError } = await supabase
       .from('events')
@@ -73,14 +105,14 @@ export async function POST(request: NextRequest) {
         slug,
         category,
         start_datetime,
+        end_datetime: start_datetime, // TODO: Calculate based on modules
         capacity,
         location_name,
-        address,
-        city,
-        state,
+        address: address || '',
+        mode: 'PRESENCIAL',
         is_published,
         created_by: user.id,
-        banner_url: null, // Can be added later with upload feature
+        banner_url: banner_url || null,
         total_hours: 0, // Will be calculated by trigger
       })
       .select()
@@ -89,6 +121,19 @@ export async function POST(request: NextRequest) {
     if (eventError) {
       console.error('Error creating event:', eventError)
       return NextResponse.json({ error: eventError.message }, { status: 500 })
+    }
+
+    // If booking_id exists, link the event to the booking
+    if (booking_id) {
+      const { error: updateBookingError } = await supabase
+        .from('space_bookings')
+        .update({ event_id: event.id })
+        .eq('id', booking_id)
+
+      if (updateBookingError) {
+        console.error('Error linking booking to event:', updateBookingError)
+        // Continue anyway, the event was created successfully
+      }
     }
 
     // Create modules

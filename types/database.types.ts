@@ -6,6 +6,8 @@ export type UserRole = 'ADMIN' | 'PALESTRANTE' | 'PARTICIPANTE';
 export type EventMode = 'PRESENCIAL' | 'ONLINE' | 'HIBRIDO';
 export type EventLayout = 'AUDITORIO' | 'U' | 'ILHAS' | 'TEATRO' | 'CIRCULAR';
 export type TicketStatus = 'PENDING_PAYMENT' | 'PAID' | 'CANCELLED' | 'USED';
+export type PaymentStatus = 'PENDING' | 'PAID' | 'CANCELLED' | 'REFUNDED';
+export type BookingStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
 
 // ============================================================================
 // USER
@@ -268,4 +270,63 @@ export interface TicketFilters {
   user_id?: string;
   status?: TicketStatus;
   checked_in?: boolean;
+}
+
+// ============================================================================
+// SPACE BOOKING (Reserva de Espaço)
+// ============================================================================
+export interface SpaceBooking {
+  id: string;
+  user_id: string;
+  event_id?: string | null;
+
+  // Booking details
+  hours: number;
+  booking_date: string;
+
+  // Addons
+  has_audiovisual: boolean;
+  has_coverage: boolean;
+  has_coffee_break: boolean;
+
+  // Pricing
+  base_price: number;
+  addons_price: number;
+  discount_percentage: number;
+  total_price: number;
+
+  // Payment
+  payment_status: PaymentStatus;
+  payment_method?: string | null;
+  payment_date?: string | null;
+  payment_id?: string | null;
+
+  // Status
+  status: BookingStatus;
+  confirmation_date?: string | null;
+
+  // Metadata
+  notes?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SpaceBookingWithUser extends SpaceBooking {
+  user: User;
+}
+
+export interface SpaceBookingWithEvent extends SpaceBooking {
+  event?: Event | null;
+}
+
+export interface CreateBookingFormData {
+  hours: number;
+  booking_date: string;
+  has_audiovisual: boolean;
+  has_coverage: boolean;
+  has_coffee_break: boolean;
+  base_price: number;
+  addons_price: number;
+  discount_percentage: number;
+  total_price: number;
 }

@@ -164,7 +164,9 @@ export default async function HomePage() {
         ) : (
           <div className="relative z-10 max-w-5xl mx-auto px-4 md:px-8 text-center py-20 animate-fade-in">
             <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-4 py-2 mb-6">
-              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+              </svg>
               <span className="text-primary text-sm font-bold uppercase tracking-wider">
                 Plataforma de Eventos
               </span>

@@ -45,14 +45,53 @@ export default function CheckoutReservaPage() {
     setFormData({ ...formData, [name]: value })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Aqui você processaria o pagamento
-    alert('Reserva confirmada! Em breve você receberá um email de confirmação.')
-    // Limpar localStorage
-    localStorage.removeItem('reserva')
-    // Redirecionar
-    window.location.href = '/'
+    setLoading(true)
+    setError('')
+
+    try {
+      if (!reserva) {
+        throw new Error('Dados da reserva não encontrados')
+      }
+
+      // Processar pagamento de reserva
+      const response = await fetch('/api/bookings/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          hours: reserva.horas,
+          booking_date: formData.dataEvento,
+          has_audiovisual: reserva.adicionais.audiovisual,
+          has_coverage: reserva.adicionais.cobertura,
+          has_coffee_break: reserva.adicionais.coffeBreak,
+          base_price: reserva.precoBase,
+          addons_price: reserva.precoAdicionaisTotal,
+          discount_percentage: reserva.descontoPercentual,
+          total_price: reserva.precoTotal,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Erro ao processar reserva')
+      }
+
+      // Salvar ID da reserva para vincular ao evento
+      localStorage.setItem('booking_id', result.booking.id)
+      localStorage.removeItem('reserva')
+
+      // Redirecionar para criar evento
+      window.location.href = '/painel/admin/eventos/novo?from_booking=true'
+    } catch (err: any) {
+      setError(err.message || 'Erro ao processar pagamento')
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (!reserva) {
@@ -93,6 +132,12 @@ export default function CheckoutReservaPage() {
               Preencha seus dados e complete o pagamento
             </p>
           </div>
+
+          {error && (
+            <div className="bg-red-500/10 border border-red-500 text-red-500 px-6 py-4 rounded-lg mb-6 animate-fade-in">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit}>
             <div className="grid lg:grid-cols-2 gap-8">
@@ -325,9 +370,10 @@ export default function CheckoutReservaPage() {
                   {/* Botões */}
                   <button
                     type="submit"
-                    className="btn-primary w-full text-lg mb-3"
+                    disabled={loading}
+                    className="btn-primary w-full text-lg mb-3 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Confirmar e Pagar
+                    {loading ? 'Processando...' : 'Confirmar e Pagar'}
                   </button>
                   <Link
                     href="/reserva"

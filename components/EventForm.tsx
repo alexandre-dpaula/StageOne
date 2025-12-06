@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 interface Module {
@@ -25,14 +25,30 @@ interface EventFormProps {
 
 export default function EventForm({ backUrl, redirectBase }: EventFormProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [bookingId, setBookingId] = useState<string | null>(null)
+  const [fromBooking, setFromBooking] = useState(false)
+
+  // Check if coming from booking
+  useEffect(() => {
+    const isFromBooking = searchParams.get('from_booking') === 'true'
+    if (isFromBooking) {
+      setFromBooking(true)
+      const storedBookingId = localStorage.getItem('booking_id')
+      if (storedBookingId) {
+        setBookingId(storedBookingId)
+      }
+    }
+  }, [searchParams])
 
   // Event fields
   const [title, setTitle] = useState('')
   const [subtitle, setSubtitle] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('TECNOLOGIA')
+  const [thumbnailUrl, setThumbnailUrl] = useState('')
   const [startDate, setStartDate] = useState('')
   const [startTime, setStartTime] = useState('')
   const [capacity, setCapacity] = useState('')
@@ -147,6 +163,7 @@ export default function EventForm({ backUrl, redirectBase }: EventFormProps) {
         description,
         slug,
         category,
+        banner_url: thumbnailUrl || null,
         start_datetime: datetime,
         capacity: parseInt(capacity),
         location_name: locationName,
@@ -154,6 +171,7 @@ export default function EventForm({ backUrl, redirectBase }: EventFormProps) {
         city,
         state,
         is_published: isPublished,
+        booking_id: bookingId || undefined,
         modules: validModules.map((m, index) => ({
           title: m.title,
           hours: m.hours,
@@ -200,6 +218,22 @@ export default function EventForm({ backUrl, redirectBase }: EventFormProps) {
         </h1>
         <p className="text-placeholder">Preencha as informações abaixo para criar um novo evento</p>
       </div>
+
+      {fromBooking && bookingId && (
+        <div className="bg-primary/10 border border-primary/30 rounded-xl p-4 mb-6 animate-fade-in">
+          <div className="flex items-start gap-3">
+            <svg className="w-6 h-6 text-primary mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div>
+              <p className="text-primary font-bold mb-1">Pagamento Confirmado!</p>
+              <p className="text-placeholder text-sm">
+                Sua reserva foi confirmada com sucesso. Agora você pode criar seu evento. Lembre-se: cada reserva permite criar apenas 1 evento.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {error && (
         <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6 animate-fade-in">
@@ -262,6 +296,34 @@ export default function EventForm({ backUrl, redirectBase }: EventFormProps) {
                   </option>
                 ))}
               </select>
+            </div>
+
+            <div>
+              <label className="block text-foreground text-sm mb-2">
+                Imagem do Evento (URL)
+              </label>
+              <input
+                type="url"
+                value={thumbnailUrl}
+                onChange={(e) => setThumbnailUrl(e.target.value)}
+                className="w-full bg-background text-foreground px-4 py-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="https://exemplo.com/imagem.jpg"
+              />
+              {thumbnailUrl && (
+                <div className="mt-3 rounded-lg overflow-hidden border border-border">
+                  <img
+                    src={thumbnailUrl}
+                    alt="Preview"
+                    className="w-full h-48 object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="200"%3E%3Crect fill="%23222" width="400" height="200"/%3E%3Ctext fill="%23666" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3EImagem inv%C3%A1lida%3C/text%3E%3C/svg%3E'
+                    }}
+                  />
+                </div>
+              )}
+              <p className="text-xs text-placeholder mt-2">
+                Cole o link de uma imagem hospedada. Recomendado: 1200x600px
+              </p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
