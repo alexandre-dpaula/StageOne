@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 
-export default function ScanPage() {
+function ScanContent() {
   const searchParams = useSearchParams()
   const token = searchParams.get('token')
   const [message, setMessage] = useState('Validando ingresso...')
@@ -43,5 +43,17 @@ export default function ScanPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function ScanPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-foreground">Carregando...</div>
+      </div>
+    }>
+      <ScanContent />
+    </Suspense>
   )
 }
