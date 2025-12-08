@@ -2,7 +2,9 @@ import { createClient } from '@/lib/supabase/server'
 import { Event, User } from '@/types/database.types'
 import Navbar from '@/components/Navbar'
 import EventCarousel from '@/components/EventCarousel'
+import EventSearch from '@/components/EventSearch'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default async function HomePage() {
   const supabase = await createClient()
@@ -33,6 +35,7 @@ export default async function HomePage() {
   // Categorize events
   const now = new Date()
   const upcomingEvents = events?.filter((e) => new Date(e.start_datetime) > now) || []
+  const recentEvents = events?.slice(0, 8) || [] // Últimos 8 eventos cadastrados
 
   const eventsByCategory = {
     'LIDERANÇA': events?.filter((e) => e.category === 'LIDERANÇA') || [],
@@ -41,15 +44,12 @@ export default async function HomePage() {
     'JUVENTUDE': events?.filter((e) => e.category === 'JUVENTUDE') || [],
   }
 
-  // Featured event (first upcoming)
-  const featuredEvent = upcomingEvents[0]
-
   return (
     <div className="min-h-screen bg-background">
       <Navbar user={user} />
 
-      {/* Hero Section - Crypto/Fintech Style */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
+      {/* Hero Section - Search Focus */}
+      <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden pt-16">
         {/* Animated Background Grid */}
         <div className="absolute inset-0 bg-background">
           <div className="absolute inset-0" style={{
@@ -65,104 +65,10 @@ export default async function HomePage() {
           <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-accent-blue/10 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }} />
         </div>
 
-        {featuredEvent ? (
-          <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 py-20">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              {/* Left Content */}
-              <div className="animate-fade-in">
-                <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-4 py-2 mb-6">
-                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                  <span className="text-primary text-sm font-bold uppercase tracking-wider">
-                    {featuredEvent.category}
-                  </span>
-                </div>
-
-                <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 leading-tight">
-                  {featuredEvent.title.split(' ').slice(0, 3).join(' ')}
-                  <span className="text-primary text-glow"> {featuredEvent.title.split(' ').slice(3).join(' ')}</span>
-                </h1>
-
-                <p className="text-lg text-placeholder mb-8 leading-relaxed">
-                  {featuredEvent.subtitle || featuredEvent.description.substring(0, 150) + '...'}
-                </p>
-
-                {/* Stats Row */}
-                <div className="flex items-center gap-6 mb-8">
-                  <div className="flex -space-x-3">
-                    <div className="w-10 h-10 rounded-full border-2 border-background bg-card flex items-center justify-center text-xs font-bold text-primary">
-                      +{upcomingEvents.length}
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-foreground font-bold">{featuredEvent.capacity} vagas</p>
-                    <p className="text-placeholder text-sm">Disponíveis</p>
-                  </div>
-                </div>
-
-                {/* CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Link
-                    href={`/evento/${featuredEvent.slug}`}
-                    className="group btn-primary text-lg flex items-center justify-center gap-2"
-                  >
-                    <span>Garantir Ingresso</span>
-                    <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                  </Link>
-                  <Link
-                    href={`/evento/${featuredEvent.slug}`}
-                    className="glass text-foreground px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 hover:border-primary/50 flex items-center justify-center"
-                  >
-                    Saber Mais
-                  </Link>
-                </div>
-              </div>
-
-              {/* Right Content - Feature Card */}
-              <div className="relative animate-slide-up">
-                <div className="glass rounded-2xl p-6 shadow-glow-md">
-                  {featuredEvent.banner_url ? (
-                    <img
-                      src={featuredEvent.banner_url}
-                      alt={featuredEvent.title}
-                      className="w-full h-64 object-cover rounded-xl mb-4"
-                    />
-                  ) : (
-                    <div className="w-full h-64 bg-gradient-to-br from-primary/20 to-accent-blue/20 rounded-xl mb-4 flex items-center justify-center">
-                      <svg className="w-20 h-20 text-primary/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
-                      </svg>
-                    </div>
-                  )}
-
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-placeholder text-sm">Data do Evento</span>
-                      <span className="text-foreground font-bold">
-                        {new Date(featuredEvent.start_datetime).toLocaleDateString('pt-BR')}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-placeholder text-sm">Localização</span>
-                      <span className="text-foreground font-bold">{featuredEvent.location_name}</span>
-                    </div>
-                    <div className="flex items-center justify-between pt-3 border-t border-border">
-                      <span className="text-placeholder text-sm">A partir de</span>
-                      <span className="text-primary text-2xl font-bold">R$ 99</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Floating badge */}
-                <div className="absolute -top-4 -right-4 bg-primary text-foreground px-4 py-2 rounded-full font-bold shadow-glow-md animate-pulse-slow">
-                  Destaque
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="relative z-10 max-w-5xl mx-auto px-4 md:px-8 text-center py-20 animate-fade-in">
+        {/* Content */}
+        <div className="relative z-10 max-w-6xl mx-auto px-4 md:px-8 py-20 w-full">
+          <div className="text-center mb-12 animate-fade-in">
+            {/* Badge */}
             <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-4 py-2 mb-6">
               <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
@@ -172,58 +78,80 @@ export default async function HomePage() {
               </span>
             </div>
 
+            {/* Heading */}
             <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 leading-tight">
               Bem-vindo ao
               <span className="text-primary text-glow"> StageOne</span>
             </h1>
 
             <p className="text-xl text-placeholder mb-12 max-w-3xl mx-auto">
-              Plataforma completa para eventos e treinamentos presenciais com tecnologia de ponta
+              Encontre e participe dos melhores eventos e treinamentos presenciais
             </p>
+          </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/reserva"
-                className="btn-primary text-lg"
-              >
-                Reserve Agora
-              </Link>
-              <Link
-                href="#eventos"
-                className="glass text-foreground px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 hover:border-primary/50"
-              >
-                Ver Eventos
-              </Link>
+          {/* Search Component */}
+          <div className="animate-slide-up">
+            <EventSearch allEvents={events || []} />
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 max-w-4xl mx-auto">
+            <div className="glass rounded-2xl p-6 text-center animate-fade-in" style={{ animationDelay: '0.1s' }}>
+              <div className="text-4xl font-bold text-primary mb-2">{events?.length || 0}</div>
+              <div className="text-placeholder text-sm font-medium">Eventos Disponíveis</div>
+            </div>
+            <div className="glass rounded-2xl p-6 text-center animate-fade-in" style={{ animationDelay: '0.2s' }}>
+              <div className="text-4xl font-bold text-primary mb-2">{upcomingEvents.length}</div>
+              <div className="text-placeholder text-sm font-medium">Próximos Eventos</div>
+            </div>
+            <div className="glass rounded-2xl p-6 text-center animate-fade-in" style={{ animationDelay: '0.3s' }}>
+              <div className="text-4xl font-bold text-primary mb-2">4</div>
+              <div className="text-placeholder text-sm font-medium">Categorias</div>
             </div>
           </div>
-        )}
+        </div>
       </section>
 
       {/* Events Carousels */}
-      <section className="pt-8 pb-20">
+      <section id="eventos" className="pt-8 pb-20">
+        {/* Últimos Eventos Cadastrados */}
+        {recentEvents.length > 0 && (
+          <EventCarousel title="Últimos Eventos Cadastrados" events={recentEvents} />
+        )}
+
+        {/* Próximos Eventos */}
         {upcomingEvents.length > 0 && (
           <EventCarousel title="Próximos Treinamentos" events={upcomingEvents} />
         )}
 
+        {/* Eventos por Categoria */}
         {eventsByCategory['LIDERANÇA'].length > 0 && (
-          <EventCarousel title="Para Líderes" events={eventsByCategory['LIDERANÇA']} />
+          <EventCarousel title="Liderança" events={eventsByCategory['LIDERANÇA']} />
         )}
 
         {eventsByCategory['NEGÓCIOS'].length > 0 && (
-          <EventCarousel title="Para Empreendedores" events={eventsByCategory['NEGÓCIOS']} />
-        )}
-
-        {eventsByCategory['JUVENTUDE'].length > 0 && (
-          <EventCarousel title="Para Jovens" events={eventsByCategory['JUVENTUDE']} />
+          <EventCarousel title="Negócios" events={eventsByCategory['NEGÓCIOS']} />
         )}
 
         {eventsByCategory['MÍDIA'].length > 0 && (
           <EventCarousel title="Mídia e Comunicação" events={eventsByCategory['MÍDIA']} />
         )}
 
+        {eventsByCategory['JUVENTUDE'].length > 0 && (
+          <EventCarousel title="Juventude" events={eventsByCategory['JUVENTUDE']} />
+        )}
+
         {events?.length === 0 && (
           <div className="text-center py-20">
-            <p className="text-placeholder text-lg">Nenhum evento disponível no momento.</p>
+            <div className="glass rounded-2xl p-12 max-w-md mx-4 md:mx-auto">
+              <svg className="w-20 h-20 text-placeholder/30 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+              </svg>
+              <p className="text-placeholder text-lg font-medium mb-2">Nenhum evento disponível</p>
+              <p className="text-placeholder/60 text-sm">
+                Novos eventos serão publicados em breve. Volte mais tarde!
+              </p>
+            </div>
           </div>
         )}
       </section>
