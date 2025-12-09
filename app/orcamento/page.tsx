@@ -34,6 +34,8 @@ export default function OrcamentoPage() {
   const [step, setStep] = useState(1) // 1: Dados pessoais, 2: Dados do evento, 3: Resumo
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [userExists, setUserExists] = useState(false)
+  const [isCheckingUser, setIsCheckingUser] = useState(false)
 
   const [formData, setFormData] = useState<OrcamentoData>({
     name: '',
@@ -71,6 +73,58 @@ export default function OrcamentoPage() {
     }
   }
 
+  // Verificar se o usuário já existe
+  const checkUserExists = async () => {
+    if (!formData.email) return
+
+    setIsCheckingUser(true)
+    setError('')
+
+    try {
+      const supabase = createClient()
+
+      // Verificar se o email existe na tabela users
+      const { data: existingUser, error: checkError } = await supabase
+        .from('users')
+        .select('id, name, phone')
+        .eq('email', formData.email)
+        .single()
+
+      if (checkError && checkError.code !== 'PGRST116') {
+        // PGRST116 = não encontrado (usuário não existe)
+        throw checkError
+      }
+
+      if (existingUser) {
+        setUserExists(true)
+        // Preencher dados existentes
+        setFormData({
+          ...formData,
+          name: existingUser.name,
+          phone: existingUser.phone || '',
+        })
+      } else {
+        setUserExists(false)
+      }
+    } catch (err: any) {
+      console.error('Erro ao verificar usuário:', err)
+      setError('Erro ao verificar email')
+    } finally {
+      setIsCheckingUser(false)
+    }
+  }
+
+  // Avançar para próximo step após validação do Step 1
+  const handleStep1Next = async () => {
+    if (!formData.name || !formData.email) {
+      setError('Preencha todos os campos')
+      return
+    }
+
+    await checkUserExists()
+    setStep(2)
+  }
+
   const handleSubmit = async () => {
     setError('')
     setIsLoading(true)
@@ -78,40 +132,71 @@ export default function OrcamentoPage() {
     try {
       const supabase = createClient()
       const prices = calculatePrice()
+      let userId: string
 
-      // 1. Criar usuário no Supabase Auth
-      const { data: authData, error: signUpError } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
-      })
+      if (userExists) {
+        // Usuário já existe - fazer login e criar reserva
+        const { data: existingUser } = await supabase
+          .from('users')
+          .select('id')
+          .eq('email', formData.email)
+          .single()
 
-      if (signUpError) throw signUpError
+        if (!existingUser) {
+          throw new Error('Usuário não encontrado')
+        }
 
-      if (!authData.user) {
-        throw new Error('Erro ao criar usuário')
+        userId = existingUser.id
+
+        // Fazer login automático (silent auth)
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password,
+        })
+
+        if (signInError) {
+          throw new Error('Senha incorreta. Por favor, faça login em /login')
+        }
+      } else {
+        // Novo usuário - criar conta
+        if (!formData.password || formData.password.length < 6) {
+          throw new Error('Senha deve ter no mínimo 6 caracteres')
+        }
+
+        const { data: authData, error: signUpError } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+        })
+
+        if (signUpError) throw signUpError
+
+        if (!authData.user) {
+          throw new Error('Erro ao criar usuário')
+        }
+
+        userId = authData.user.id
+
+        // Criar perfil do usuário
+        const { error: profileError } = await supabase.from('users').insert({
+          id: userId,
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          role: 'PARTICIPANTE',
+        })
+
+        if (profileError) {
+          console.log('Profile creation note:', profileError)
+        }
       }
 
-      // 2. Criar perfil do usuário
-      const { error: profileError } = await supabase.from('users').insert({
-        id: authData.user.id,
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        role: 'PARTICIPANTE',
-      })
-
-      if (profileError) {
-        // Se já existe, ignore o erro (pode ser re-signup)
-        console.log('Profile creation note:', profileError)
-      }
-
-      // 3. Criar reserva de espaço
+      // Criar reserva de espaço
       const bookingDate = new Date(formData.eventDate)
 
       const { data: booking, error: bookingError } = await supabase
         .from('space_bookings')
         .insert({
-          user_id: authData.user.id,
+          user_id: userId,
           hours: formData.hours,
           booking_date: bookingDate.toISOString(),
           has_audiovisual: formData.hasAudiovisual,
@@ -130,7 +215,7 @@ export default function OrcamentoPage() {
 
       if (bookingError) throw bookingError
 
-      // 4. Redirecionar para página de pagamento/checkout
+      // Redirecionar para página de pagamento/checkout
       localStorage.setItem('booking_id', booking.id)
       router.push('/checkout-reserva?new_user=true')
 
@@ -200,7 +285,10 @@ export default function OrcamentoPage() {
           {/* Step 1: Dados Pessoais */}
           {step === 1 && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-foreground mb-6">Seus Dados</h2>
+              <h2 className="text-2xl font-bold text-foreground mb-6">Identificação</h2>
+              <p className="text-placeholder -mt-4 mb-4">
+                Informe seus dados para verificarmos se você já possui cadastro
+              </p>
 
               <Input
                 label="Nome Completo"
@@ -215,28 +303,29 @@ export default function OrcamentoPage() {
                 label="E-mail"
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, email: e.target.value })
+                  setUserExists(false) // Reset ao mudar email
+                }}
                 placeholder="seu@email.com"
                 required
               />
 
-              <Input
-                label="Telefone/WhatsApp"
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                placeholder="(00) 00000-0000"
-                required
-              />
-
-              <Input
-                label="Criar Senha"
-                type="password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                placeholder="Mínimo 6 caracteres"
-                required
-              />
+              {userExists && (
+                <div className="bg-primary/10 border border-primary/30 rounded-lg p-4 text-sm">
+                  <div className="flex items-start gap-2">
+                    <svg className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                      <p className="font-medium text-foreground">Email já cadastrado!</p>
+                      <p className="text-placeholder mt-1">
+                        Encontramos uma conta com este email. Você precisará informar sua senha no resumo final.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="flex gap-4 pt-4">
                 <Button
@@ -247,9 +336,10 @@ export default function OrcamentoPage() {
                   Cancelar
                 </Button>
                 <Button
-                  onClick={() => setStep(2)}
+                  onClick={handleStep1Next}
                   className="flex-1"
-                  disabled={!formData.name || !formData.email || !formData.phone || formData.password.length < 6}
+                  disabled={!formData.name || !formData.email}
+                  isLoading={isCheckingUser}
                 >
                   Próximo
                 </Button>
@@ -261,6 +351,39 @@ export default function OrcamentoPage() {
           {step === 2 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-foreground mb-6">Detalhes do Evento</h2>
+
+              {/* Campos adicionais se for novo usuário */}
+              {!userExists && (
+                <>
+                  <Input
+                    label="Telefone/WhatsApp"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    placeholder="(00) 00000-0000"
+                    required
+                  />
+
+                  <Input
+                    label="Criar Senha"
+                    type="password"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    placeholder="Mínimo 6 caracteres"
+                    required
+                  />
+
+                  <div className="bg-primary/10 border border-primary/30 rounded-lg p-3 text-sm text-foreground">
+                    <strong>📝 Nova conta:</strong> Seus dados serão salvos para facilitar futuros orçamentos
+                  </div>
+                </>
+              )}
+
+              {userExists && (
+                <div className="bg-primary/10 border border-primary/30 rounded-lg p-3 text-sm text-foreground">
+                  <strong>✓ Bem-vindo de volta!</strong> Vamos usar seus dados cadastrados
+                </div>
+              )}
 
               <Input
                 label="Nome do Evento"
@@ -388,7 +511,11 @@ export default function OrcamentoPage() {
                 <Button
                   onClick={() => setStep(3)}
                   className="flex-1"
-                  disabled={!formData.eventName || !formData.eventDate}
+                  disabled={
+                    !formData.eventName ||
+                    !formData.eventDate ||
+                    (!userExists && (!formData.phone || formData.password.length < 6))
+                  }
                 >
                   Ver Orçamento
                 </Button>
@@ -445,6 +572,24 @@ export default function OrcamentoPage() {
                 </div>
               </div>
 
+              {/* Campo de senha para usuários existentes */}
+              {userExists && (
+                <div className="glass rounded-xl p-4 border-2 border-primary/30">
+                  <h3 className="font-bold text-foreground mb-3">Confirmação de Acesso</h3>
+                  <p className="text-sm text-placeholder mb-4">
+                    Para continuar, confirme sua senha
+                  </p>
+                  <Input
+                    label="Senha"
+                    type="password"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    placeholder="Digite sua senha"
+                    required
+                  />
+                </div>
+              )}
+
               {/* Valores */}
               <div className="glass rounded-xl p-4 border-2 border-primary/30">
                 <h3 className="font-bold text-foreground mb-4">Valores</h3>
@@ -493,7 +638,9 @@ export default function OrcamentoPage() {
               <div className="bg-primary/10 border border-primary/30 rounded-lg p-4 text-sm text-foreground">
                 <strong>📋 Próximos passos:</strong>
                 <ul className="mt-2 space-y-1 ml-4 list-disc">
-                  <li>Sua conta será criada automaticamente</li>
+                  {!userExists && <li>Sua conta será criada automaticamente</li>}
+                  {userExists && <li>Faremos login com suas credenciais</li>}
+                  <li>A reserva será registrada no sistema</li>
                   <li>Você será redirecionado para o pagamento</li>
                   <li>Após confirmação, terá acesso ao painel</li>
                 </ul>
@@ -510,6 +657,7 @@ export default function OrcamentoPage() {
                 <Button
                   onClick={handleSubmit}
                   isLoading={isLoading}
+                  disabled={userExists && !formData.password}
                   className="flex-1"
                 >
                   Confirmar e Pagar
