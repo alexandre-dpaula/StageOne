@@ -7,20 +7,22 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, error, type = 'text', ...props }, ref) => {
+  ({ className, label, error, type = 'text', disabled, ...props }, ref) => {
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-foreground mb-1">
             {label}
           </label>
         )}
         <input
           type={type}
           ref={ref}
+          disabled={disabled}
           className={cn(
-            'w-full px-4 py-2 border rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all',
-            error ? 'border-red-500' : 'border-gray-300',
+            'w-full px-4 py-2 border rounded-lg placeholder-placeholder focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all',
+            error ? 'border-red-500' : 'border-border',
+            disabled ? 'bg-primary/10 text-primary font-medium border-primary/30 cursor-not-allowed' : 'bg-card text-foreground',
             className
           )}
           {...props}

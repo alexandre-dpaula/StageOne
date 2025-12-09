@@ -513,7 +513,6 @@ export default function OrcamentoPage() {
                     type="email"
                     value={formData.email}
                     disabled
-                    className="bg-card/50"
                   />
 
                   <Input
