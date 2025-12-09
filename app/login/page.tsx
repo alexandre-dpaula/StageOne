@@ -41,8 +41,8 @@ export default function LoginPage() {
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <Link href="/" className="text-4xl font-bold text-primary">
-            StageOne
+          <Link href="/" className="text-2xl text-primary hover:text-glow transition-all">
+            <span className="font-normal">Stage</span><span className="font-bold">One</span>
           </Link>
           <h1 className="text-2xl font-bold text-foreground mt-4">Entrar na sua conta</h1>
           <p className="text-placeholder mt-2">Acesse seus eventos e ingressos</p>

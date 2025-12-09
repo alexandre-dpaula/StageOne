@@ -81,7 +81,7 @@ export default async function HomePage() {
             {/* Heading */}
             <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 leading-tight">
               Bem-vindo ao
-              <span className="text-primary text-glow"> StageOne</span>
+              <span className="text-primary text-glow"> <span className="font-normal">Stage</span><span className="font-bold">One</span></span>
             </h1>
 
             <p className="text-xl text-placeholder mb-12 max-w-3xl mx-auto">

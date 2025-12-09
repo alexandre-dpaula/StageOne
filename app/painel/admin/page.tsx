@@ -37,8 +37,8 @@ export default async function AdminDashboard() {
       <nav className="glass border-b border-border/30">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <Link href="/" className="text-2xl font-bold text-primary hover:text-glow transition-all">
-              StageOne <span className="text-foreground">Admin</span>
+            <Link href="/" className="text-2xl text-primary hover:text-glow transition-all">
+              <span className="font-normal">Stage</span><span className="font-bold">One</span> <span className="text-foreground">Admin</span>
             </Link>
             <div className="flex items-center gap-4">
               <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">

@@ -234,8 +234,8 @@ export default function OrcamentoPage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <Link href="/" className="text-3xl font-bold text-primary">
-            StageOne
+          <Link href="/" className="text-2xl text-primary hover:text-glow transition-all">
+            <span className="font-normal">Stage</span><span className="font-bold">One</span>
           </Link>
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mt-4">
             Solicitar Orçamento
@@ -427,15 +427,15 @@ export default function OrcamentoPage() {
                 <input
                   type="range"
                   min="10"
-                  max="200"
-                  step="10"
+                  max="24"
+                  step="2"
                   value={formData.expectedAttendees}
                   onChange={(e) => setFormData({ ...formData, expectedAttendees: parseInt(e.target.value) })}
                   className="w-full h-2 bg-card rounded-lg appearance-none cursor-pointer accent-primary"
                 />
                 <div className="flex justify-between text-xs text-placeholder mt-1">
                   <span>10</span>
-                  <span>200</span>
+                  <span>24</span>
                 </div>
               </div>
 
