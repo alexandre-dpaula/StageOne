@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
@@ -36,6 +36,7 @@ export default function OrcamentoPage() {
   const [error, setError] = useState('')
   const [userExists, setUserExists] = useState(false)
   const [isCheckingUser, setIsCheckingUser] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false) // Novo state para verificar se está logado
 
   const [formData, setFormData] = useState<OrcamentoData>({
     name: '',
@@ -114,6 +115,38 @@ export default function OrcamentoPage() {
     }
   }
 
+  // Verificar se usuário já está logado ao carregar a página
+  useEffect(() => {
+    const checkAuthUser = async () => {
+      const supabase = createClient()
+
+      const { data: { user } } = await supabase.auth.getUser()
+
+      if (user) {
+        // Usuário está logado, buscar dados do perfil
+        const { data: profile } = await supabase
+          .from('users')
+          .select('name, email, phone')
+          .eq('id', user.id)
+          .single()
+
+        if (profile) {
+          setFormData({
+            ...formData,
+            name: profile.name,
+            email: profile.email,
+            phone: profile.phone || '',
+          })
+          setUserExists(true)
+          setIsLoggedIn(true) // Marcar que está logado
+          setStep(2) // Pular para Step 2 automaticamente
+        }
+      }
+    }
+
+    checkAuthUser()
+  }, [])
+
   // Avançar para próximo step após validação do Step 1
   const handleStep1Next = async () => {
     if (!formData.name || !formData.email) {
@@ -134,8 +167,14 @@ export default function OrcamentoPage() {
       const prices = calculatePrice()
       let userId: string
 
-      if (userExists) {
-        // Usuário já existe - fazer login e criar reserva
+      // Verificar se já está autenticado
+      const { data: { user: authUser } } = await supabase.auth.getUser()
+
+      if (authUser) {
+        // Usuário já está logado, usar o ID dele
+        userId = authUser.id
+      } else if (userExists) {
+        // Usuário existe mas não está logado - fazer login
         const { data: existingUser } = await supabase
           .from('users')
           .select('id')
@@ -572,8 +611,8 @@ export default function OrcamentoPage() {
                 </div>
               </div>
 
-              {/* Campo de senha para usuários existentes */}
-              {userExists && (
+              {/* Campo de senha para usuários existentes (apenas se não estiver logado) */}
+              {userExists && !isLoggedIn && (
                 <div className="glass rounded-xl p-4 border-2 border-primary/30">
                   <h3 className="font-bold text-foreground mb-3">Confirmação de Acesso</h3>
                   <p className="text-sm text-placeholder mb-4">
@@ -609,6 +648,23 @@ export default function OrcamentoPage() {
                     placeholder="Digite sua senha"
                     required
                   />
+                </div>
+              )}
+
+              {/* Usuário já está logado */}
+              {isLoggedIn && (
+                <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
+                  <div className="flex items-start gap-2">
+                    <svg className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                      <p className="font-medium text-foreground">Você já está logado!</p>
+                      <p className="text-sm text-placeholder mt-1">
+                        Seus dados foram carregados automaticamente. Basta confirmar o orçamento.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -661,7 +717,8 @@ export default function OrcamentoPage() {
                 <strong>📋 Próximos passos:</strong>
                 <ul className="mt-2 space-y-1 ml-4 list-disc">
                   {!userExists && <li>Sua conta será criada automaticamente</li>}
-                  {userExists && <li>Faremos login com suas credenciais</li>}
+                  {userExists && !isLoggedIn && <li>Faremos login com suas credenciais</li>}
+                  {isLoggedIn && <li>Você já está autenticado no sistema</li>}
                   <li>A reserva será registrada no sistema</li>
                   <li>Você será redirecionado para o pagamento</li>
                   <li>Após confirmação, terá acesso ao painel</li>
@@ -679,7 +736,7 @@ export default function OrcamentoPage() {
                 <Button
                   onClick={handleSubmit}
                   isLoading={isLoading}
-                  disabled={userExists && !formData.password}
+                  disabled={userExists && !isLoggedIn && !formData.password}
                   className="flex-1"
                 >
                   Confirmar e Pagar
