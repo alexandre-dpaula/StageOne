@@ -13,6 +13,7 @@ interface OrcamentoData {
   email: string
   phone: string
   password: string
+  confirmPassword: string
 
   // Dados do evento
   eventName: string
@@ -43,15 +44,18 @@ export default function OrcamentoPage() {
     email: '',
     phone: '',
     password: '',
+    confirmPassword: '',
     eventName: '',
     eventDate: '',
     hours: 4,
-    expectedAttendees: 50,
+    expectedAttendees: 10,
     hasAudiovisual: false,
     hasCoverage: false,
     hasCoffeeBreak: false,
     notes: '',
   })
+
+  const [emailChecked, setEmailChecked] = useState(false) // Se o email já foi verificado
 
   // Cálculo de preços
   const PRICE_PER_HOUR = 200
@@ -74,9 +78,19 @@ export default function OrcamentoPage() {
     }
   }
 
-  // Verificar se o usuário já existe
-  const checkUserExists = async () => {
-    if (!formData.email) return
+  // Verificar se o email existe
+  const checkEmail = async () => {
+    if (!formData.email) {
+      setError('Por favor, informe seu email')
+      return
+    }
+
+    // Validação básica de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(formData.email)) {
+      setError('Por favor, informe um email válido')
+      return
+    }
 
     setIsCheckingUser(true)
     setError('')
@@ -97,19 +111,22 @@ export default function OrcamentoPage() {
       }
 
       if (existingUser) {
+        // Usuário existe - carregar dados
         setUserExists(true)
-        // Preencher dados existentes
         setFormData({
           ...formData,
           name: existingUser.name,
           phone: existingUser.phone || '',
         })
       } else {
+        // Usuário não existe - preparar para cadastro
         setUserExists(false)
       }
+
+      setEmailChecked(true)
     } catch (err: any) {
-      console.error('Erro ao verificar usuário:', err)
-      setError('Erro ao verificar email')
+      console.error('Erro ao verificar email:', err)
+      setError('Erro ao verificar email. Tente novamente.')
     } finally {
       setIsCheckingUser(false)
     }
@@ -138,7 +155,8 @@ export default function OrcamentoPage() {
             phone: profile.phone || '',
           })
           setUserExists(true)
-          setIsLoggedIn(true) // Marcar que está logado
+          setIsLoggedIn(true)
+          setEmailChecked(true) // Email já está verificado
           setStep(2) // Pular para Step 2 automaticamente
         }
       }
@@ -147,14 +165,35 @@ export default function OrcamentoPage() {
     checkAuthUser()
   }, [])
 
-  // Avançar para próximo step após validação do Step 1
-  const handleStep1Next = async () => {
-    if (!formData.name || !formData.email) {
-      setError('Preencha todos os campos')
+  // Validar campos do Step 1 antes de avançar
+  const handleStep1Next = () => {
+    setError('')
+
+    // Se email não foi verificado ainda, não pode avançar
+    if (!emailChecked) {
+      setError('Por favor, verifique seu email primeiro')
       return
     }
 
-    await checkUserExists()
+    // Se usuário não existe, validar campos de cadastro
+    if (!userExists) {
+      if (!formData.name || !formData.phone || !formData.password || !formData.confirmPassword) {
+        setError('Por favor, preencha todos os campos')
+        return
+      }
+
+      if (formData.password.length < 6) {
+        setError('A senha deve ter no mínimo 6 caracteres')
+        return
+      }
+
+      if (formData.password !== formData.confirmPassword) {
+        setError('As senhas não coincidem')
+        return
+      }
+    }
+
+    // Validações ok, avançar para Step 2
     setStep(2)
   }
 
@@ -321,79 +360,162 @@ export default function OrcamentoPage() {
             </div>
           )}
 
-          {/* Step 1: Dados Pessoais */}
+          {/* Step 1: Identificação */}
           {step === 1 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-foreground mb-6">Identificação</h2>
-              <p className="text-placeholder -mt-4 mb-4">
-                Informe seus dados para verificarmos se você já possui cadastro
-              </p>
 
-              <Input
-                label="Nome Completo"
-                type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Seu nome completo"
-                required
-              />
+              {/* Parte 1: Verificação de Email */}
+              {!emailChecked && (
+                <>
+                  <p className="text-placeholder -mt-4 mb-4">
+                    Primeiro, informe seu email para verificarmos se você já possui cadastro
+                  </p>
 
-              <Input
-                label="E-mail"
-                type="email"
-                value={formData.email}
-                onChange={(e) => {
-                  setFormData({ ...formData, email: e.target.value })
-                  setUserExists(false) // Reset ao mudar email
-                }}
-                placeholder="seu@email.com"
-                required
-              />
+                  <Input
+                    label="E-mail"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => {
+                      setFormData({ ...formData, email: e.target.value })
+                      setEmailChecked(false)
+                      setUserExists(false)
+                    }}
+                    placeholder="seu@email.com"
+                    required
+                  />
 
-              {userExists && (
-                <div className="bg-primary/10 border border-primary/30 rounded-lg p-4 text-sm">
-                  <div className="flex items-start gap-2">
-                    <svg className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <div>
-                      <p className="font-medium text-foreground">Email já cadastrado!</p>
-                      <p className="text-placeholder mt-1">
-                        Encontramos uma conta com este email. Você precisará informar sua senha no resumo final.
-                      </p>
-                    </div>
+                  <div className="flex gap-4 pt-4">
+                    <Button
+                      onClick={() => router.push('/')}
+                      variant="secondary"
+                      className="flex-1"
+                    >
+                      Cancelar
+                    </Button>
+                    <Button
+                      onClick={checkEmail}
+                      className="flex-1"
+                      disabled={!formData.email}
+                      isLoading={isCheckingUser}
+                    >
+                      Verificar Email
+                    </Button>
                   </div>
-                </div>
+                </>
               )}
 
-              <div className="flex gap-4 pt-4">
-                <Button
-                  onClick={() => router.push('/')}
-                  variant="secondary"
-                  className="flex-1"
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  onClick={handleStep1Next}
-                  className="flex-1"
-                  disabled={!formData.name || !formData.email}
-                  isLoading={isCheckingUser}
-                >
-                  Próximo
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {/* Step 2: Dados do Evento */}
-          {step === 2 && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-foreground mb-6">Detalhes do Evento</h2>
-
-              {/* Campos adicionais se for novo usuário */}
-              {!userExists && (
+              {/* Parte 2: Usuário Já Cadastrado */}
+              {emailChecked && userExists && (
                 <>
+                  <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
+                    <div className="flex items-start gap-2">
+                      <svg className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <div className="flex-1">
+                        <p className="font-medium text-foreground">Bem-vindo de volta!</p>
+                        <p className="text-sm text-placeholder mt-1">
+                          Encontramos uma conta com o email <strong>{formData.email}</strong>
+                        </p>
+                      </div>
+                      <Button
+                        onClick={() => {
+                          setEmailChecked(false)
+                          setUserExists(false)
+                          setFormData({ ...formData, email: '', name: '', phone: '' })
+                        }}
+                        variant="ghost"
+                        size="sm"
+                      >
+                        Alterar
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="glass rounded-lg p-4 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      <div>
+                        <span className="text-sm text-placeholder">Nome:</span>{' '}
+                        <span className="text-foreground font-medium">{formData.name}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                      <div>
+                        <span className="text-sm text-placeholder">Telefone:</span>{' '}
+                        <span className="text-foreground font-medium">{formData.phone || 'Não cadastrado'}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 pt-4">
+                    <Button
+                      onClick={() => router.push('/')}
+                      variant="secondary"
+                      className="flex-1"
+                    >
+                      Cancelar
+                    </Button>
+                    <Button
+                      onClick={handleStep1Next}
+                      className="flex-1"
+                    >
+                      Continuar
+                    </Button>
+                  </div>
+                </>
+              )}
+
+              {/* Parte 3: Novo Cadastro */}
+              {emailChecked && !userExists && (
+                <>
+                  <div className="bg-primary/10 border border-primary/30 rounded-lg p-4 mb-4">
+                    <div className="flex items-start gap-2">
+                      <svg className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                      </svg>
+                      <div className="flex-1">
+                        <p className="font-medium text-foreground">Novo cadastro</p>
+                        <p className="text-sm text-placeholder mt-1">
+                          Email <strong>{formData.email}</strong> não encontrado. Complete seu cadastro abaixo.
+                        </p>
+                      </div>
+                      <Button
+                        onClick={() => {
+                          setEmailChecked(false)
+                          setFormData({ ...formData, email: '' })
+                        }}
+                        variant="ghost"
+                        size="sm"
+                      >
+                        Alterar
+                      </Button>
+                    </div>
+                  </div>
+
+                  <Input
+                    label="Nome Completo"
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="Seu nome completo"
+                    required
+                  />
+
+                  <Input
+                    label="E-mail"
+                    type="email"
+                    value={formData.email}
+                    disabled
+                    className="bg-card/50"
+                  />
+
                   <Input
                     label="Telefone/WhatsApp"
                     type="tel"
@@ -412,17 +534,45 @@ export default function OrcamentoPage() {
                     required
                   />
 
-                  <div className="bg-primary/10 border border-primary/30 rounded-lg p-3 text-sm text-foreground">
-                    <strong>📝 Nova conta:</strong> Seus dados serão salvos para facilitar futuros orçamentos
+                  <Input
+                    label="Confirmar Senha"
+                    type="password"
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                    placeholder="Digite a senha novamente"
+                    required
+                  />
+
+                  <div className="flex gap-4 pt-4">
+                    <Button
+                      onClick={() => router.push('/')}
+                      variant="secondary"
+                      className="flex-1"
+                    >
+                      Cancelar
+                    </Button>
+                    <Button
+                      onClick={handleStep1Next}
+                      className="flex-1"
+                      disabled={
+                        !formData.name ||
+                        !formData.phone ||
+                        !formData.password ||
+                        !formData.confirmPassword
+                      }
+                    >
+                      Continuar
+                    </Button>
                   </div>
                 </>
               )}
+            </div>
+          )}
 
-              {userExists && (
-                <div className="bg-primary/10 border border-primary/30 rounded-lg p-3 text-sm text-foreground">
-                  <strong>✓ Bem-vindo de volta!</strong> Vamos usar seus dados cadastrados
-                </div>
-              )}
+          {/* Step 2: Dados do Evento */}
+          {step === 2 && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-foreground mb-6">Detalhes do Evento</h2>
 
               <Input
                 label="Nome do Evento"
@@ -550,11 +700,7 @@ export default function OrcamentoPage() {
                 <Button
                   onClick={() => setStep(3)}
                   className="flex-1"
-                  disabled={
-                    !formData.eventName ||
-                    !formData.eventDate ||
-                    (!userExists && (!formData.phone || formData.password.length < 6))
-                  }
+                  disabled={!formData.eventName || !formData.eventDate}
                 >
                   Ver Orçamento
                 </Button>
