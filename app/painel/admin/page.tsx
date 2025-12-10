@@ -65,12 +65,6 @@ export default async function AdminDashboard() {
             <span className="px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/30">
               Total de Eventos {totalEvents || 0}
             </span>
-            <span className="px-3 py-1 rounded-full text-xs font-bold bg-accent-blue/10 text-accent-blue border border-accent-blue/30">
-              Total de Usuários {totalUsers || 0}
-            </span>
-            <span className="px-3 py-1 rounded-full text-xs font-bold bg-accent-purple/10 text-accent-purple border border-accent-purple/30">
-              Total de Ingressos {totalTickets || 0}
-            </span>
           </div>
         </div>
 
