@@ -96,6 +96,12 @@ export default async function HomePage() {
 
           {/* CTA Criar Evento */}
           <div className="mt-8 text-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
+            <div className="mb-4 max-w-2xl mx-auto">
+              <h3 className="text-xl font-bold text-foreground mb-2">Monte seu Orçamento Sob Medida</h3>
+              <p className="text-placeholder text-sm">
+                Descreva sua necessidade e deixe a plataforma recomendar os melhores serviços para alcançar o resultado ideal.
+              </p>
+            </div>
             <Link
               href="/painel/admin/eventos/novo"
               className="inline-flex items-center gap-2 bg-primary text-background px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 hover:shadow-glow-lg"
@@ -103,11 +109,8 @@ export default async function HomePage() {
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
-              Criar Evento
+              Faça uma Cotação
             </Link>
-            <p className="text-placeholder text-sm mt-3">
-              Adicione um novo evento à plataforma
-            </p>
           </div>
 
           {/* Stats */}
