@@ -165,7 +165,7 @@ export function generateTicketConfirmationEmail(data: TicketEmailData): string {
 
               <!-- Botão CTA -->
               <div style="text-align: center;">
-                <a href="https://stageone.com/meus-ingressos" style="display: inline-block; background: linear-gradient(135deg, #C4F82A 0%, #9FD122 100%); color: #0A0B0D; text-decoration: none; padding: 16px 48px; border-radius: 12px; font-weight: 700; font-size: 16px; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(196, 248, 42, 0.3); transition: all 0.3s;">
+                <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/meus-ingressos" style="display: inline-block; background: linear-gradient(135deg, #C4F82A 0%, #9FD122 100%); color: #0A0B0D; text-decoration: none; padding: 16px 48px; border-radius: 12px; font-weight: 700; font-size: 16px; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(196, 248, 42, 0.3); transition: all 0.3s;">
                   Ver Meus Ingressos
                 </a>
               </div>
