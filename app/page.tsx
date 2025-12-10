@@ -109,22 +109,6 @@ export default async function HomePage() {
               Monte seu Orçamento Sob Medida
             </p>
           </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 max-w-4xl mx-auto">
-            <div className="glass rounded-2xl p-6 text-center animate-fade-in" style={{ animationDelay: '0.1s' }}>
-              <div className="text-4xl font-bold text-primary mb-2">{events?.length || 0}</div>
-              <div className="text-placeholder text-sm font-medium">Eventos Disponíveis</div>
-            </div>
-            <div className="glass rounded-2xl p-6 text-center animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              <div className="text-4xl font-bold text-primary mb-2">{upcomingEvents.length}</div>
-              <div className="text-placeholder text-sm font-medium">Próximos Eventos</div>
-            </div>
-            <div className="glass rounded-2xl p-6 text-center animate-fade-in" style={{ animationDelay: '0.3s' }}>
-              <div className="text-4xl font-bold text-primary mb-2">4</div>
-              <div className="text-placeholder text-sm font-medium">Categorias</div>
-            </div>
-          </div>
         </div>
       </section>
 
