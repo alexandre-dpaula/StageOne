@@ -129,19 +129,6 @@ export default async function UsuariosAdminPage() {
             <p className="text-placeholder">Nenhum usuário encontrado</p>
           </div>
         )}
-
-        {/* Info */}
-        <div className="mt-8 bg-blue-500/10 border border-blue-500 rounded-lg p-6">
-          <h3 className="text-blue-400 font-bold mb-2">ℹ️ Gerenciamento de Roles</h3>
-          <p className="text-blue-300 text-sm mb-2">
-            Para alterar o role de um usuário, use o SQL Editor do Supabase:
-          </p>
-          <div className="bg-background/30 rounded p-4 mt-2">
-            <code className="text-foreground text-sm">
-              UPDATE public.users SET role = 'PALESTRANTE' WHERE id = 'user-id-aqui';
-            </code>
-          </div>
-        </div>
       </div>
     </div>
   )
