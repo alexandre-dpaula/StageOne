@@ -87,7 +87,7 @@ export default async function AdminDashboard() {
         </div>
 
         {/* Quick Actions - Numbered cards like reference */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           <Link
             href="/painel/admin/eventos"
             className="glass rounded-2xl p-6 border border-border/30 hover:border-primary/50 hover:shadow-glow-sm transition-all group relative overflow-hidden"
@@ -115,25 +115,12 @@ export default async function AdminDashboard() {
           </Link>
 
           <Link
-            href="#eventos"
+            href="/"
             className="glass rounded-2xl p-6 border border-border/30 hover:border-primary/50 hover:shadow-glow-sm transition-all group relative overflow-hidden"
           >
             <div className="absolute -top-2 -right-2 text-6xl font-bold text-border/20">03.</div>
             <div className="relative z-10">
               <span className="text-primary text-sm font-bold mb-2 block">03.</span>
-              <h3 className="text-foreground font-bold text-lg group-hover:text-primary transition-colors">
-                Próximos Eventos
-              </h3>
-            </div>
-          </Link>
-
-          <Link
-            href="/"
-            className="glass rounded-2xl p-6 border border-border/30 hover:border-primary/50 hover:shadow-glow-sm transition-all group relative overflow-hidden"
-          >
-            <div className="absolute -top-2 -right-2 text-6xl font-bold text-border/20">04.</div>
-            <div className="relative z-10">
-              <span className="text-primary text-sm font-bold mb-2 block">04.</span>
               <h3 className="text-foreground font-bold text-lg group-hover:text-primary transition-colors">
                 Ver Site Público
               </h3>
@@ -142,7 +129,7 @@ export default async function AdminDashboard() {
         </div>
 
         {/* Upcoming Events */}
-        <div id="eventos" className="glass rounded-2xl p-6 border border-border/30 animate-fade-in">
+        <div className="glass rounded-2xl p-6 border border-border/30 animate-fade-in">
           <h2 className="text-2xl font-bold text-foreground mb-4">Próximos Eventos</h2>
           {upcomingEvents && upcomingEvents.length > 0 ? (
             <div className="space-y-3">
