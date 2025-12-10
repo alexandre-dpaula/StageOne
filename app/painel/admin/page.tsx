@@ -54,41 +54,23 @@ export default async function AdminDashboard() {
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8 animate-fade-in">
-          <h1 className="text-4xl font-bold text-foreground mb-2">
-            Dashboard <span className="text-primary text-glow">Admin</span>
-          </h1>
-          <p className="text-placeholder">Visão geral da plataforma</p>
-        </div>
-
-        {/* Stats with glassmorphism */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8 animate-slide-up">
-          <div className="glass rounded-2xl p-6 border border-border/30 hover:border-primary/30 transition-all">
-            <div className="flex justify-between items-start mb-3">
-              <p className="text-placeholder text-sm uppercase tracking-wider">Total de Eventos</p>
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/30">
-                01
-              </span>
-            </div>
-            <p className="text-5xl font-bold text-foreground">{totalEvents || 0}</p>
+        <div className="mb-8 animate-fade-in flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-bold text-foreground mb-2">
+              Dashboard <span className="text-primary text-glow">Admin</span>
+            </h1>
+            <p className="text-placeholder">Visão geral da plataforma</p>
           </div>
-          <div className="glass rounded-2xl p-6 border border-border/30 hover:border-accent-blue/30 transition-all">
-            <div className="flex justify-between items-start mb-3">
-              <p className="text-placeholder text-sm uppercase tracking-wider">Total de Usuários</p>
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-accent-blue/10 text-accent-blue border border-accent-blue/30">
-                02
-              </span>
-            </div>
-            <p className="text-5xl font-bold text-foreground">{totalUsers || 0}</p>
-          </div>
-          <div className="glass rounded-2xl p-6 border border-border/30 hover:border-accent-purple/30 transition-all">
-            <div className="flex justify-between items-start mb-3">
-              <p className="text-placeholder text-sm uppercase tracking-wider">Total de Ingressos</p>
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-accent-purple/10 text-accent-purple border border-accent-purple/30">
-                03
-              </span>
-            </div>
-            <p className="text-5xl font-bold text-foreground">{totalTickets || 0}</p>
+          <div className="flex gap-3">
+            <span className="px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/30">
+              Total de Eventos {totalEvents || 0}
+            </span>
+            <span className="px-3 py-1 rounded-full text-xs font-bold bg-accent-blue/10 text-accent-blue border border-accent-blue/30">
+              Total de Usuários {totalUsers || 0}
+            </span>
+            <span className="px-3 py-1 rounded-full text-xs font-bold bg-accent-purple/10 text-accent-purple border border-accent-purple/30">
+              Total de Ingressos {totalTickets || 0}
+            </span>
           </div>
         </div>
 
