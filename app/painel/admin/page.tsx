@@ -128,25 +128,12 @@ export default async function AdminDashboard() {
           </Link>
 
           <Link
-            href="/painel/admin/resend-emails"
+            href="/"
             className="glass rounded-2xl p-6 border border-border/30 hover:border-primary/50 hover:shadow-glow-sm transition-all group relative overflow-hidden"
           >
             <div className="absolute -top-2 -right-2 text-6xl font-bold text-border/20">04.</div>
             <div className="relative z-10">
               <span className="text-primary text-sm font-bold mb-2 block">04.</span>
-              <h3 className="text-foreground font-bold text-lg group-hover:text-primary transition-colors">
-                Reenviar Emails
-              </h3>
-            </div>
-          </Link>
-
-          <Link
-            href="/"
-            className="glass rounded-2xl p-6 border border-border/30 hover:border-primary/50 hover:shadow-glow-sm transition-all group relative overflow-hidden"
-          >
-            <div className="absolute -top-2 -right-2 text-6xl font-bold text-border/20">05.</div>
-            <div className="relative z-10">
-              <span className="text-primary text-sm font-bold mb-2 block">05.</span>
               <h3 className="text-foreground font-bold text-lg group-hover:text-primary transition-colors">
                 Ver Site Público
               </h3>
