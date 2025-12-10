@@ -1,4 +1,5 @@
 import { generateTicketConfirmationEmail } from './templates/ticket-confirmation'
+import nodemailer from 'nodemailer'
 
 interface SendTicketEmailParams {
   to: string
@@ -54,30 +55,27 @@ export async function sendTicketConfirmationEmail(params: SendTicketEmailParams)
     }
 
     // OPÇÃO 2: Usando Nodemailer (SMTP genérico)
-    // Descomente abaixo se preferir usar SMTP tradicional
-    /*
-    const nodemailer = require('nodemailer')
+    if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+      const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT || '587'),
+        secure: false, // true para porta 465, false para outras portas
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+      })
 
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    })
+      await transporter.sendMail({
+        from: `"StageOne" <${process.env.SMTP_USER}>`,
+        to: params.to,
+        subject: `Confirmação de Inscrição - ${params.eventTitle}`,
+        html: htmlContent,
+      })
 
-    await transporter.sendMail({
-      from: '"StageOne" <noreply@stageone.com>',
-      to: params.to,
-      subject: `Confirmação de Inscrição - ${params.eventTitle}`,
-      html: htmlContent,
-    })
-
-    console.log(`Email enviado com sucesso para ${params.to}`)
-    return true
-    */
+      console.log(`✅ Email enviado com sucesso para ${params.to}`)
+      return true
+    }
 
     // MODO DESENVOLVIMENTO: Apenas loga o email
     console.log('='.repeat(80))
