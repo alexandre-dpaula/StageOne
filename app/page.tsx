@@ -94,19 +94,19 @@ export default async function HomePage() {
             <EventSearch allEvents={events || []} />
           </div>
 
-          {/* CTA Orçamento */}
+          {/* CTA Criar Evento */}
           <div className="mt-8 text-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
             <Link
-              href="/orcamento"
+              href="/painel/admin/eventos/novo"
               className="inline-flex items-center gap-2 bg-primary text-background px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 hover:shadow-glow-lg"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
-              Solicitar Orçamento
+              Criar Evento
             </Link>
             <p className="text-placeholder text-sm mt-3">
-              Faça uma cotação rápida e garanta seu espaço
+              Adicione um novo evento à plataforma
             </p>
           </div>
 

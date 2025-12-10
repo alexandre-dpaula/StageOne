@@ -20,10 +20,6 @@ export default function Navbar({ user }: NavbarProps) {
           </Link>
 
           <div className="hidden md:flex items-center gap-6">
-            <Link href="/" className="text-placeholder hover:text-primary transition-colors font-medium">
-              Eventos
-            </Link>
-
             {user ? (
               <>
                 {user.role === 'ADMIN' && (
@@ -117,13 +113,6 @@ export default function Navbar({ user }: NavbarProps) {
       {isMenuOpen && (
         <div className="md:hidden glass border-t border-border/30 animate-fade-in">
           <div className="px-4 py-4 space-y-3">
-            <Link
-              href="/"
-              className="block text-placeholder hover:text-primary transition-colors font-medium py-2"
-            >
-              Eventos
-            </Link>
-
             {user ? (
               <>
                 {user.role === 'ADMIN' && (
