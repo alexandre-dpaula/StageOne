@@ -105,7 +105,7 @@ export default async function HomePage() {
               </svg>
               Criar Evento
             </Link>
-            <p className="text-placeholder text-sm mt-3">
+            <p className="text-white text-xl mt-3" style={{ opacity: 1 }}>
               Monte seu Orçamento Sob Medida
             </p>
           </div>
