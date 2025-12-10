@@ -95,7 +95,7 @@ export default async function HomePage() {
           </div>
 
           {/* CTA Criar Evento */}
-          <div className="mt-8 text-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
+          <div className="mt-20 text-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
             <Link
               href="/painel/admin/eventos/novo"
               className="inline-flex items-center gap-2 bg-primary text-background px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 hover:shadow-glow-lg"
