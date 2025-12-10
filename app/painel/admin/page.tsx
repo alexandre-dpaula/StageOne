@@ -63,35 +63,32 @@ export default async function AdminDashboard() {
 
         {/* Stats with glassmorphism */}
         <div className="grid md:grid-cols-3 gap-6 mb-8 animate-slide-up">
-          <div className="glass rounded-2xl p-6 border border-border/30 hover:border-primary/30 transition-all relative overflow-hidden">
-            <div className="absolute -top-2 -right-2 text-6xl font-bold text-border/20">01</div>
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-primary text-sm font-bold">01.</span>
-                <p className="text-placeholder text-sm uppercase tracking-wider">Total de Eventos</p>
-              </div>
-              <p className="text-5xl font-bold text-foreground">{totalEvents || 0}</p>
+          <div className="glass rounded-2xl p-6 border border-border/30 hover:border-primary/30 transition-all">
+            <div className="flex justify-between items-start mb-3">
+              <p className="text-placeholder text-sm uppercase tracking-wider">Total de Eventos</p>
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/30">
+                01
+              </span>
             </div>
+            <p className="text-5xl font-bold text-foreground">{totalEvents || 0}</p>
           </div>
-          <div className="glass rounded-2xl p-6 border border-border/30 hover:border-accent-blue/30 transition-all relative overflow-hidden">
-            <div className="absolute -top-2 -right-2 text-6xl font-bold text-border/20">02</div>
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-accent-blue text-sm font-bold">02.</span>
-                <p className="text-placeholder text-sm uppercase tracking-wider">Total de Usuários</p>
-              </div>
-              <p className="text-5xl font-bold text-foreground">{totalUsers || 0}</p>
+          <div className="glass rounded-2xl p-6 border border-border/30 hover:border-accent-blue/30 transition-all">
+            <div className="flex justify-between items-start mb-3">
+              <p className="text-placeholder text-sm uppercase tracking-wider">Total de Usuários</p>
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-accent-blue/10 text-accent-blue border border-accent-blue/30">
+                02
+              </span>
             </div>
+            <p className="text-5xl font-bold text-foreground">{totalUsers || 0}</p>
           </div>
-          <div className="glass rounded-2xl p-6 border border-border/30 hover:border-accent-purple/30 transition-all relative overflow-hidden">
-            <div className="absolute -top-2 -right-2 text-6xl font-bold text-border/20">03</div>
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-accent-purple text-sm font-bold">03.</span>
-                <p className="text-placeholder text-sm uppercase tracking-wider">Total de Ingressos</p>
-              </div>
-              <p className="text-5xl font-bold text-foreground">{totalTickets || 0}</p>
+          <div className="glass rounded-2xl p-6 border border-border/30 hover:border-accent-purple/30 transition-all">
+            <div className="flex justify-between items-start mb-3">
+              <p className="text-placeholder text-sm uppercase tracking-wider">Total de Ingressos</p>
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-accent-purple/10 text-accent-purple border border-accent-purple/30">
+                03
+              </span>
             </div>
+            <p className="text-5xl font-bold text-foreground">{totalTickets || 0}</p>
           </div>
         </div>
 
