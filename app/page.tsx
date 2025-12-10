@@ -106,7 +106,7 @@ export default async function HomePage() {
               Criar Evento
             </Link>
             <p className="text-placeholder text-sm mt-3">
-              Adicione um novo evento à plataforma
+              Monte seu Orçamento Sob Medida
             </p>
           </div>
 
