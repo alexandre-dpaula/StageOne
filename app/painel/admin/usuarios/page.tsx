@@ -94,7 +94,7 @@ export default async function UsuariosAdminPage() {
                               className="w-10 h-10 rounded-full mr-3"
                             />
                           ) : (
-                            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-foreground font-bold mr-3">
+                            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-background font-bold mr-3">
                               {u.name?.charAt(0) || '?'}
                             </div>
                           )}

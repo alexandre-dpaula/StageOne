@@ -124,7 +124,7 @@ export default async function AlunosEventoPage({ params }: { params: { eventId: 
                               className="w-10 h-10 rounded-full mr-3"
                             />
                           ) : (
-                            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-foreground font-bold mr-3">
+                            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-background font-bold mr-3">
                               {ticket.buyer_name.charAt(0)}
                             </div>
                           )}

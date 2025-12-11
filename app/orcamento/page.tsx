@@ -313,7 +313,7 @@ export default function OrcamentoPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="text-2xl text-primary hover:text-glow transition-all">
-            <span className="font-normal">Stage</span><span className="font-bold">One</span>
+            <span className="font-normal">Stage</span><span className="font-bold">One</span><sup className="text-[0.5em] top-[-0.3em] relative ml-0.5">™</sup>
           </Link>
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mt-4">
             Solicitar Orçamento

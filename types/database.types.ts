@@ -53,6 +53,7 @@ export interface Event {
 
   // Media
   banner_url?: string | null;
+  cover_image?: string | null;
 
   // Meta
   created_by: string;
@@ -197,6 +198,7 @@ export interface CreateEventFormData {
 
   // Media
   banner_url?: string;
+  cover_image?: string;
 
   // Modules
   modules: {

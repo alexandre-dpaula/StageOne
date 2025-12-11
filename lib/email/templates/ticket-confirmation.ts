@@ -33,7 +33,7 @@ export function generateTicketConfirmationEmail(data: TicketEmailData): string {
           <tr>
             <td style="background: linear-gradient(135deg, #C4F82A 0%, #9FD122 100%); padding: 40px 32px; text-align: center;">
               <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #0A0B0D; letter-spacing: -0.5px;">
-                StageOne
+                <span style="font-weight: 300;">Stage</span><span style="font-weight: 700;">One</span><sup style="font-size: 14px; vertical-align: top; position: relative; top: 0.15em; font-weight: 400;">™</sup>
               </h1>
               <p style="margin: 8px 0 0; font-size: 14px; font-weight: 600; color: #0A0B0D; text-transform: uppercase; letter-spacing: 2px;">
                 Plataforma de Eventos

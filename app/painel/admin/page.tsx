@@ -38,7 +38,7 @@ export default async function AdminDashboard() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <Link href="/" className="text-2xl text-primary hover:text-glow transition-all">
-              <span className="font-normal">Stage</span><span className="font-bold">One</span> <span className="text-foreground">Admin</span>
+              <span className="font-normal">Stage</span><span className="font-bold">One</span><sup className="text-[0.5em] top-[-0.3em] relative ml-0.5">™</sup> <span className="text-foreground">Admin</span>
             </Link>
             <div className="flex items-center gap-4">
               <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">

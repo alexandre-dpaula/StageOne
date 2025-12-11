@@ -40,11 +40,11 @@
 
 ```tsx
 // Botão Primário (Destaque)
-<button className="bg-primary hover:bg-primary-600 text-foreground px-6 py-3 rounded-lg">
+<button className="bg-primary hover:bg-primary-600 text-background px-6 py-3 rounded-lg">
   Criar Evento
-  // Background: #F7B177 (Primary)
-  // Hover: #F38431 (Primary-600)
-  // Texto: #FFFFFF (Foreground)
+  // Background: #C4F82A (Primary - Verde Neon)
+  // Hover: #9FD41F (Primary-600)
+  // Texto: #0A0B0D (Background - Preto)
 </button>
 
 // Botão Secundário
@@ -216,7 +216,7 @@
   <div className="p-4">
     <h3 className="text-foreground font-semibold text-lg">{title}</h3>
     <p className="text-placeholder text-sm mb-3">{subtitle}</p>
-    <button className="w-full bg-primary hover:bg-primary-600 text-foreground py-2 rounded-lg">
+    <button className="w-full bg-primary hover:bg-primary-600 text-background py-2 rounded-lg">
       Ver Detalhes
     </button>
   </div>
@@ -239,7 +239,7 @@
     <p className="text-placeholder mb-6">Conteúdo do modal</p>
 
     <div className="flex gap-3">
-      <button className="flex-1 bg-primary hover:bg-primary-600 text-foreground px-4 py-2 rounded-lg">
+      <button className="flex-1 bg-primary hover:bg-primary-600 text-background px-4 py-2 rounded-lg">
         Confirmar
       </button>
       <button className="flex-1 bg-background hover:bg-placeholder text-foreground px-4 py-2 rounded-lg border border-placeholder">
@@ -385,7 +385,7 @@ Ao criar um novo componente, verifique:
   <div className="flex gap-3">
     <button
       type="submit"
-      className="flex-1 bg-primary hover:bg-primary-600 text-foreground
+      className="flex-1 bg-primary hover:bg-primary-600 text-background
                  px-6 py-3 rounded-lg font-semibold transition-colors"
     >
       Cadastrar

@@ -49,7 +49,7 @@ export default async function HomePage() {
       <Navbar user={user} />
 
       {/* Hero Section - Search Focus */}
-      <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden pt-16">
+      <section className="relative min-h-[75vh] sm:min-h-[80vh] lg:min-h-[85vh] flex items-center justify-center overflow-hidden pt-16">
         {/* Animated Background Grid */}
         <div className="absolute inset-0 bg-background">
           <div className="absolute inset-0" style={{
@@ -61,30 +61,30 @@ export default async function HomePage() {
           }} />
 
           {/* Glow orbs */}
-          <div className="absolute top-20 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse-slow" />
-          <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-accent-blue/10 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }} />
+          <div className="absolute top-20 left-1/4 w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 bg-primary/10 rounded-full blur-3xl animate-pulse-slow" />
+          <div className="absolute bottom-20 right-1/4 w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 bg-accent-blue/10 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }} />
         </div>
 
         {/* Content */}
-        <div className="relative z-10 max-w-6xl mx-auto px-4 md:px-8 py-20 w-full">
-          <div className="text-center mb-12 animate-fade-in">
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-8 py-12 sm:py-16 md:py-20 w-full">
+          <div className="text-center mb-8 sm:mb-10 md:mb-12 animate-fade-in">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-4 py-2 mb-6">
-              <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-3 sm:px-4 py-1.5 sm:py-2 mb-4 sm:mb-6">
+              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
               </svg>
-              <span className="text-primary text-sm font-bold uppercase tracking-wider">
+              <span className="text-primary text-xs sm:text-sm font-bold uppercase tracking-wider">
                 Plataforma de Eventos
               </span>
             </div>
 
             {/* Heading */}
-            <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground mb-4 sm:mb-6 leading-tight px-4">
               Bem-vindo ao
-              <span className="text-primary text-glow"> <span className="font-normal">Stage</span><span className="font-bold">One</span></span>
+              <span className="text-primary text-glow"> <span className="font-normal">Stage</span><span className="font-bold">One</span><sup className="text-[0.5em] top-[-0.3em] relative ml-1">™</sup></span>
             </h1>
 
-            <p className="text-xl text-placeholder mb-12 max-w-3xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl text-placeholder mb-8 sm:mb-10 md:mb-12 max-w-3xl mx-auto px-4">
               Encontre e participe dos melhores eventos e treinamentos presenciais
             </p>
           </div>
@@ -95,17 +95,17 @@ export default async function HomePage() {
           </div>
 
           {/* CTA Criar Evento */}
-          <div className="mt-20 text-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
+          <div className="mt-12 sm:mt-16 md:mt-20 text-center animate-fade-in px-4" style={{ animationDelay: '0.4s' }}>
             <Link
               href="/painel/admin/eventos/novo"
-              className="inline-flex items-center gap-2 bg-primary text-background px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 hover:shadow-glow-lg"
+              className="inline-flex items-center gap-2 bg-primary text-background px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold text-base sm:text-lg transition-all duration-300 hover:scale-105 hover:shadow-glow-lg"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
               Criar Evento
             </Link>
-            <p className="text-white text-xl mt-3" style={{ opacity: 1 }}>
+            <p className="text-white text-base sm:text-lg md:text-xl mt-3" style={{ opacity: 1 }}>
               Monte seu Orçamento Sob Medida
             </p>
           </div>
@@ -159,7 +159,7 @@ export default async function HomePage() {
       {/* Footer */}
       <footer className="bg-card border-t border-card py-8">
         <div className="max-w-7xl mx-auto px-4 text-center text-placeholder">
-          <p>&copy; 2025 StageOne. Todos os direitos reservados.</p>
+          <p>&copy; 2025 <span className="font-normal">Stage</span><span className="font-bold">One</span>™. Todos os direitos reservados.</p>
         </div>
       </footer>
     </div>

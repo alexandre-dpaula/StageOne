@@ -34,7 +34,7 @@ export default async function PalestranteDashboard() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <Link href="/" className="text-2xl text-primary hover:text-glow transition-all">
-              <span className="font-normal">Stage</span><span className="font-bold">One</span> <span className="text-foreground">Palestrante</span>
+              <span className="font-normal">Stage</span><span className="font-bold">One</span><sup className="text-[0.5em] top-[-0.3em] relative ml-0.5">™</sup> <span className="text-foreground">Palestrante</span>
             </Link>
             <div className="flex items-center gap-4">
               <span className="text-foreground">{user.name}</span>

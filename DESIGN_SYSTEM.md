@@ -76,7 +76,7 @@ primary-900: #8F4109  /* Muito escuro */
 
 ```tsx
 // Botão primário
-<button className="bg-primary hover:bg-primary-600 text-white px-6 py-3 rounded-lg">
+<button className="bg-primary hover:bg-primary-600 text-background px-6 py-3 rounded-lg">
   Ação Principal
 </button>
 
@@ -300,7 +300,7 @@ O design system já está configurado para ser responsivo:
   <div className="p-4">
     <h3 className="text-foreground font-semibold text-lg mb-2">{title}</h3>
     <p className="text-placeholder text-sm mb-4">{subtitle}</p>
-    <button className="w-full bg-primary hover:bg-primary-600 text-white py-2 rounded-lg">
+    <button className="w-full bg-primary hover:bg-primary-600 text-background py-2 rounded-lg">
       Ver Detalhes
     </button>
   </div>
@@ -321,7 +321,7 @@ O design system já está configurado para ser responsivo:
     />
   </div>
 
-  <button className="w-full bg-primary hover:bg-primary-600 text-white py-3 rounded-lg font-semibold">
+  <button className="w-full bg-primary hover:bg-primary-600 text-background py-3 rounded-lg font-semibold">
     Enviar
   </button>
 </form>

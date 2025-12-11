@@ -12,13 +12,15 @@ export default function EventCard({ event, badge }: EventCardProps) {
   return (
     <Link href={`/evento/${event.slug}`} className="group block">
       <div className="relative overflow-hidden rounded-2xl glass border border-border/30 hover:border-primary/30 transition-all duration-300 hover:shadow-glow-sm">
-        <div className="relative aspect-[16/9] overflow-hidden">
-          {event.banner_url ? (
+        <div className="relative overflow-hidden">
+          {event.cover_image || event.banner_url ? (
             <Image
-              src={event.banner_url}
+              src={event.cover_image || event.banner_url!}
               alt={event.title}
-              fill
-              className="object-cover transition-transform duration-500 group-hover:scale-110"
+              width={0}
+              height={0}
+              sizes="(max-width: 768px) 100vw, 420px"
+              className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-110"
             />
           ) : (
             <div className="flex items-center justify-center h-full bg-gradient-to-br from-primary/20 to-accent-blue/20">

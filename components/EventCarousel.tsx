@@ -36,19 +36,19 @@ export default function EventCarousel({ title, events }: EventCarouselProps) {
   if (events.length === 0) return null
 
   return (
-    <div className="mb-12 group/carousel">
-      <h2 className="text-2xl font-bold text-foreground mb-4 px-4 md:px-12">
+    <div className="mb-8 sm:mb-10 md:mb-12 group/carousel">
+      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-3 sm:mb-4 px-4 sm:px-6 md:px-12">
         {title}
       </h2>
 
-      <div className="relative px-4 md:px-12">
+      <div className="relative px-4 sm:px-6 md:px-12">
         {showLeftArrow && (
           <button
             onClick={() => scroll('left')}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 hover:bg-background text-foreground p-3 rounded-r-lg opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300"
+            className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 hover:bg-background text-foreground p-2 sm:p-3 rounded-r-lg opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300"
             aria-label="Scroll left"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
@@ -57,11 +57,11 @@ export default function EventCarousel({ title, events }: EventCarouselProps) {
         <div
           ref={scrollRef}
           onScroll={checkScroll}
-          className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth"
+          className="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {events.map((event) => (
-            <div key={event.id} className="flex-none w-[280px] md:w-[320px]">
+            <div key={event.id} className="flex-none w-[260px] sm:w-[280px] md:w-[320px] lg:w-[340px] snap-start">
               <EventCard event={event} />
             </div>
           ))}
@@ -70,10 +70,10 @@ export default function EventCarousel({ title, events }: EventCarouselProps) {
         {showRightArrow && (
           <button
             onClick={() => scroll('right')}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 hover:bg-background text-foreground p-3 rounded-l-lg opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300"
+            className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 hover:bg-background text-foreground p-2 sm:p-3 rounded-l-lg opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300"
             aria-label="Scroll right"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>

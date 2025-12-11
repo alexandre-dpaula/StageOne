@@ -1,9 +1,16 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { OFFICIAL_LOCATION } from '@/lib/constants/location'
+
+const createTempId = () => `new-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+const formatSessionName = (index: number, baseTitle: string) => {
+  const sessionNumber = String(index + 1).padStart(2, '0')
+  const trimmedTitle = baseTitle?.trim()
+  return trimmedTitle ? `Sessão ${sessionNumber} - ${trimmedTitle}` : `Sessão ${sessionNumber}`
+}
 
 interface Module {
   id: string
@@ -20,64 +27,93 @@ interface TicketType {
   autoName: boolean
 }
 
-const createTempId = () => `temp-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-
-const formatSessionName = (index: number, baseTitle: string) => {
-  const sessionNumber = String(index + 1).padStart(2, '0')
-  const trimmedTitle = baseTitle?.trim()
-  return trimmedTitle ? `Sessão ${sessionNumber} - ${trimmedTitle}` : `Sessão ${sessionNumber}`
+interface Event {
+  id: string
+  title: string
+  subtitle: string
+  description: string
+  slug: string
+  category: string
+  cover_image: string | null
+  start_datetime: string
+  capacity: number
+  location_name: string
+  address: string
+  city: string
+  state: string
+  is_published: boolean
+  modules: any[]
+  ticketTypes: any[]
 }
 
-interface EventFormProps {
+interface EventEditFormProps {
+  event: Event
   backUrl: string
-  redirectBase: string
 }
 
-export default function EventForm({ backUrl, redirectBase }: EventFormProps) {
+export default function EventEditForm({ event, backUrl }: EventEditFormProps) {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [bookingId, setBookingId] = useState<string | null>(null)
-  const [fromBooking, setFromBooking] = useState(false)
-
-  // Check if coming from booking
-  useEffect(() => {
-    const isFromBooking = searchParams.get('from_booking') === 'true'
-    if (isFromBooking) {
-      setFromBooking(true)
-      const storedBookingId = localStorage.getItem('booking_id')
-      if (storedBookingId) {
-        setBookingId(storedBookingId)
-      }
-    }
-  }, [searchParams])
 
   // Event fields
-  const [title, setTitle] = useState('')
-  const [subtitle, setSubtitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [category, setCategory] = useState('TECNOLOGIA')
-  const [thumbnailUrl, setThumbnailUrl] = useState('')
+  const [title, setTitle] = useState(event.title)
+  const [subtitle, setSubtitle] = useState(event.subtitle)
+  const [description, setDescription] = useState(event.description)
+  const [category, setCategory] = useState(event.category)
+  const [thumbnailUrl, setThumbnailUrl] = useState(event.cover_image || '')
   const [imageFile, setImageFile] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(event.cover_image)
   const [uploadingImage, setUploadingImage] = useState(false)
-  const [startDate, setStartDate] = useState('')
-  const [startTime, setStartTime] = useState('')
-  const [capacity, setCapacity] = useState('')
-  const [locationName, setLocationName] = useState(OFFICIAL_LOCATION.name)
-  const [address, setAddress] = useState(OFFICIAL_LOCATION.address)
-  const [city, setCity] = useState(OFFICIAL_LOCATION.city)
-  const [state, setState] = useState(OFFICIAL_LOCATION.state)
-  const [isPublished, setIsPublished] = useState(false)
+  const [capacity, setCapacity] = useState(event.capacity.toString())
+  const [locationName, setLocationName] = useState(event.location_name || OFFICIAL_LOCATION.name)
+  const [address, setAddress] = useState(event.address || OFFICIAL_LOCATION.address)
+  const [city, setCity] = useState(event.city || OFFICIAL_LOCATION.city)
+  const [state, setState] = useState(event.state || OFFICIAL_LOCATION.state)
+  const [isPublished, setIsPublished] = useState(event.is_published)
+
+  // Extract date and time from datetime
+  const datetime = new Date(event.start_datetime)
+  const [startDate, setStartDate] = useState(
+    datetime.toISOString().split('T')[0]
+  )
+  const [startTime, setStartTime] = useState(
+    datetime.toTimeString().slice(0, 5)
+  )
 
   // Modules
-  const [modules, setModules] = useState<Module[]>([{ id: createTempId(), title: '', hours: 0 }])
+  const [modules, setModules] = useState<Module[]>(
+    event.modules.length > 0
+      ? event.modules.map((m) => ({
+          id: m.id,
+          title: m.title,
+          hours: m.hours,
+        }))
+      : [{ id: createTempId(), title: '', hours: 0 }]
+  )
 
   // Ticket Types
-  const [ticketTypes, setTicketTypes] = useState<TicketType[]>([
-    { id: createTempId(), name: formatSessionName(0, ''), description: '', price: 0, quantity: 0, autoName: true },
-  ])
+  const [ticketTypes, setTicketTypes] = useState<TicketType[]>(
+    event.ticketTypes.length > 0
+      ? event.ticketTypes.map((t) => ({
+          id: t.id,
+          name: t.name,
+          description: t.description || '',
+          price: t.price,
+          quantity: t.total_quantity,
+          autoName: false,
+        }))
+      : [
+          {
+            id: createTempId(),
+            name: formatSessionName(0, event.title),
+            description: '',
+            price: 0,
+            quantity: 0,
+            autoName: true,
+          },
+        ]
+  )
 
   const categories = [
     'TECNOLOGIA',
@@ -113,17 +149,17 @@ export default function EventForm({ backUrl, redirectBase }: EventFormProps) {
   }, [title])
 
   const addTicketType = () => {
-    setTicketTypes((prev) => {
-      const newTicket = {
+    setTicketTypes((prev) => [
+      ...prev,
+      {
         id: createTempId(),
         name: formatSessionName(prev.length, title),
         description: '',
         price: 0,
         quantity: 0,
         autoName: true,
-      }
-      return [...prev, newTicket]
-    })
+      },
+    ])
   }
 
   const removeTicketType = (id: string) => {
@@ -150,15 +186,6 @@ export default function EventForm({ backUrl, redirectBase }: EventFormProps) {
     )
   }
 
-  const generateSlug = (text: string) => {
-    return text
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '')
-  }
-
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -169,7 +196,7 @@ export default function EventForm({ backUrl, redirectBase }: EventFormProps) {
       return
     }
 
-    // Validar tamanho (1MB = 1048576 bytes)
+    // Validar tamanho (1MB)
     if (file.size > 1048576) {
       alert('A imagem deve ter no máximo 1MB')
       return
@@ -181,7 +208,6 @@ export default function EventForm({ backUrl, redirectBase }: EventFormProps) {
       setImagePreview(reader.result as string)
     }
     reader.readAsDataURL(file)
-
     setImageFile(file)
   }
 
@@ -200,11 +226,21 @@ export default function EventForm({ backUrl, redirectBase }: EventFormProps) {
     })
 
     if (!response.ok) {
-      throw new Error('Erro ao fazer upload da imagem')
+      const errorData = await response.json()
+      throw new Error(errorData.error || 'Erro ao fazer upload da imagem')
     }
 
     const data = await response.json()
     return data.url
+  }
+
+  const generateSlug = (text: string) => {
+    return text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -234,14 +270,14 @@ export default function EventForm({ backUrl, redirectBase }: EventFormProps) {
         throw new Error('Adicione pelo menos um tipo de ingresso válido')
       }
 
-      // Upload image if selected
+      // Upload da imagem se houver um novo arquivo
       let coverImageUrl = thumbnailUrl
       if (imageFile) {
         setUploadingImage(true)
         try {
           coverImageUrl = await uploadImage(imageFile)
-        } catch (err) {
-          throw new Error('Erro ao fazer upload da imagem')
+        } catch (err: any) {
+          throw new Error(err.message || 'Erro ao fazer upload da imagem')
         } finally {
           setUploadingImage(false)
         }
@@ -268,25 +304,25 @@ export default function EventForm({ backUrl, redirectBase }: EventFormProps) {
         city,
         state,
         is_published: isPublished,
-        booking_id: bookingId || undefined,
         modules: validModules.map((m, index) => ({
+          id: m.id.startsWith('new-') ? undefined : m.id,
           title: m.title,
           hours: m.hours,
           order_index: index,
         })),
         ticket_types: validTickets.map((t) => ({
+          id: t.id.startsWith('new-') ? undefined : t.id,
           name: t.name,
           description: t.description,
           price: parseFloat(t.price.toString()),
           total_quantity: parseInt(t.quantity.toString()),
-          sold_quantity: 0,
           is_active: true,
         })),
       }
 
-      // Call API to create event
-      const response = await fetch('/api/events/create', {
-        method: 'POST',
+      // Call API to update event
+      const response = await fetch(`/api/eventos/${event.id}`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(eventData),
       })
@@ -294,13 +330,14 @@ export default function EventForm({ backUrl, redirectBase }: EventFormProps) {
       const result = await response.json()
 
       if (!response.ok) {
-        throw new Error(result.error || 'Erro ao criar evento')
+        throw new Error(result.error || 'Erro ao atualizar evento')
       }
 
-      // Redirect to event details
-      router.push(`${redirectBase}/${result.eventId}`)
+      // Redirect back
+      router.push(backUrl)
+      router.refresh()
     } catch (err: any) {
-      setError(err.message || 'Erro ao criar evento')
+      setError(err.message || 'Erro ao atualizar evento')
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } finally {
       setLoading(false)
@@ -311,26 +348,10 @@ export default function EventForm({ backUrl, redirectBase }: EventFormProps) {
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="mb-8 animate-fade-in">
         <h1 className="text-4xl font-bold text-foreground mb-2">
-          Criar <span className="text-primary text-glow">Novo Evento</span>
+          Editar <span className="text-primary text-glow">Evento</span>
         </h1>
-        <p className="text-placeholder">Preencha as informações abaixo para criar um novo evento</p>
+        <p className="text-placeholder">Atualize as informações do evento</p>
       </div>
-
-      {fromBooking && bookingId && (
-        <div className="bg-primary/10 border border-primary/30 rounded-xl p-4 mb-6 animate-fade-in">
-          <div className="flex items-start gap-3">
-            <svg className="w-6 h-6 text-primary mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <div>
-              <p className="text-primary font-bold mb-1">Pagamento Confirmado!</p>
-              <p className="text-placeholder text-sm">
-                Sua reserva foi confirmada com sucesso. Agora você pode criar seu evento. Lembre-se: cada reserva permite criar apenas 1 evento.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
 
       {error && (
         <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6 animate-fade-in">
@@ -409,16 +430,13 @@ export default function EventForm({ backUrl, redirectBase }: EventFormProps) {
               </div>
               {imagePreview && (
                 <div className="mt-3 rounded-lg overflow-hidden border border-border relative">
-                  <img
-                    src={imagePreview}
-                    alt="Preview"
-                    className="w-full h-48 object-cover"
-                  />
+                  <img src={imagePreview} alt="Preview" className="w-full h-48 object-cover" />
                   <button
                     type="button"
                     onClick={() => {
                       setImageFile(null)
                       setImagePreview(null)
+                      setThumbnailUrl('')
                     }}
                     className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-red-600 transition-colors"
                   >
@@ -591,7 +609,7 @@ export default function EventForm({ backUrl, redirectBase }: EventFormProps) {
             <div>
               <h2 className="text-2xl font-bold text-foreground">Sessões do Evento *</h2>
               <p className="text-sm text-placeholder mt-1">
-                Configure cada sessão com data, horário e capacidade específica.
+                Utilize uma sessão por turma/data com a quantidade de vagas correspondente.
               </p>
             </div>
             <button
@@ -625,7 +643,7 @@ export default function EventForm({ backUrl, redirectBase }: EventFormProps) {
                     value={ticket.name}
                     onChange={(e) => updateTicketType(ticket.id, 'name', e.target.value)}
                     className="w-full bg-background text-foreground px-4 py-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="Ex: Sessão 01 - 26/01 às 18h - Para 50 pessoas"
+                    placeholder="Ex: Sessão 02 - 03/02 às 18h - Para 80 pessoas"
                     required
                   />
 
@@ -687,7 +705,7 @@ export default function EventForm({ backUrl, redirectBase }: EventFormProps) {
               className="w-5 h-5 rounded bg-card border-border text-primary focus:ring-primary"
             />
             <span className="text-foreground">
-              Publicar evento imediatamente (visível para todos)
+              Publicar evento (visível para todos)
             </span>
           </label>
           <p className="text-gray-500 text-sm mt-2 ml-8">
@@ -702,7 +720,7 @@ export default function EventForm({ backUrl, redirectBase }: EventFormProps) {
             disabled={loading || uploadingImage}
             className="btn-primary flex-1 text-lg disabled:bg-card-hover disabled:cursor-not-allowed disabled:hover:scale-100"
           >
-            {uploadingImage ? 'Enviando imagem...' : loading ? 'Criando evento...' : 'Criar Evento'}
+            {uploadingImage ? 'Enviando imagem...' : loading ? 'Salvando...' : 'Salvar Alterações'}
           </button>
 
           <Link

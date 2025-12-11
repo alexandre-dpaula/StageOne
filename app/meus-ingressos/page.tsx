@@ -70,7 +70,7 @@ export default function MeusIngressosPage() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <Link href="/" className="text-2xl text-primary hover:text-glow transition-all">
-              <span className="font-normal">Stage</span><span className="font-bold">One</span>
+              <span className="font-normal">Stage</span><span className="font-bold">One</span><sup className="text-[0.5em] top-[-0.3em] relative ml-0.5">™</sup>
             </Link>
             <Link href="/" className="text-placeholder hover:text-foreground">
               Voltar
@@ -95,58 +95,95 @@ export default function MeusIngressosPage() {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {tickets.map((ticket) => (
-              <div key={ticket.id} className="bg-card rounded-lg overflow-hidden">
-                <div className="h-32 bg-gradient-to-r from-primary-600 to-primary-800 flex items-center justify-center">
-                  <h3 className="text-foreground font-bold text-center px-4">{ticket.event.title}</h3>
+              <div key={ticket.id} className="bg-card rounded-xl overflow-hidden border border-border/30 hover:border-primary/20 transition-all duration-300 hover:shadow-lg">
+                {/* Cover Image */}
+                <div className="relative h-56 bg-background/50 group overflow-hidden">
+                  {ticket.event.cover_image ? (
+                    <img
+                      src={ticket.event.cover_image}
+                      alt={ticket.event.title}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-card to-background/80">
+                      <svg
+                        className="w-16 h-16 text-placeholder/40"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1.5}
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                    </div>
+                  )}
+
+                  {/* Gradient Overlay com hover */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="absolute bottom-0 left-0 right-0 p-4">
+                      <p className="text-foreground text-sm line-clamp-2">{ticket.event.subtitle || ticket.event.description}</p>
+                    </div>
+                  </div>
+
+                  {/* Status Badge */}
+                  <div className="absolute top-3 right-3">
+                    <span
+                      className={`px-3 py-1.5 rounded-full text-xs font-bold backdrop-blur-md ${
+                        ticket.status === 'PAID'
+                          ? 'bg-green-500/90 text-white'
+                          : ticket.status === 'USED'
+                          ? 'bg-blue-500/90 text-white'
+                          : 'bg-yellow-500/90 text-white'
+                      }`}
+                    >
+                      {ticket.status === 'PAID'
+                        ? '✓ Pago'
+                        : ticket.status === 'USED'
+                        ? '✓ Utilizado'
+                        : ticket.status}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="p-6">
-                  <div className="space-y-3 mb-4">
+                {/* Content */}
+                <div className="p-5">
+                  {/* Título do Evento */}
+                  <h3 className="text-lg font-bold text-foreground mb-4 line-clamp-2">{ticket.event.title}</h3>
+
+                  {/* Informações em Grid */}
+                  <div className="grid grid-cols-2 gap-3 mb-4 pb-4 border-b border-border/30">
                     <div>
-                      <p className="text-placeholder text-sm">Data</p>
-                      <p className="text-foreground text-sm">{formatDateTime(ticket.event.start_datetime)}</p>
+                      <p className="text-placeholder text-xs mb-1 font-medium">📅 Data</p>
+                      <p className="text-foreground text-sm font-semibold">{formatDateTime(ticket.event.start_datetime)}</p>
                     </div>
 
                     <div>
-                      <p className="text-placeholder text-sm">Local</p>
-                      <p className="text-foreground text-sm">{ticket.event.location_name}</p>
+                      <p className="text-placeholder text-xs mb-1 font-medium">📍 Local</p>
+                      <p className="text-foreground text-sm font-semibold truncate">{ticket.event.location_name}</p>
                     </div>
 
-                    <div>
-                      <p className="text-placeholder text-sm">Tipo de Ingresso</p>
-                      <p className="text-foreground text-sm font-semibold">{ticket.ticket_type.name}</p>
-                    </div>
-
-                    <div>
-                      <p className="text-placeholder text-sm">Status</p>
-                      <span
-                        className={`inline-block px-2 py-1 rounded text-xs font-semibold ${
-                          ticket.status === 'PAID'
-                            ? 'bg-green-500/20 text-green-500'
-                            : ticket.status === 'USED'
-                            ? 'bg-blue-500/20 text-blue-500'
-                            : 'bg-yellow-500/20 text-yellow-500'
-                        }`}
-                      >
-                        {ticket.status === 'PAID'
-                          ? 'Pago'
-                          : ticket.status === 'USED'
-                          ? 'Utilizado'
-                          : ticket.status}
-                      </span>
+                    <div className="col-span-2">
+                      <p className="text-placeholder text-xs mb-1 font-medium">🎫 Tipo de Ingresso</p>
+                      <p className="text-primary text-sm font-bold">{ticket.ticket_type.name}</p>
                     </div>
 
                     {ticket.checked_in_at && (
-                      <div>
-                        <p className="text-placeholder text-sm">Check-in realizado</p>
-                        <p className="text-green-500 text-sm">{formatDateTime(ticket.checked_in_at)}</p>
+                      <div className="col-span-2">
+                        <p className="text-placeholder text-xs mb-1 font-medium">✓ Check-in realizado</p>
+                        <p className="text-green-500 text-sm font-semibold">{formatDateTime(ticket.checked_in_at)}</p>
                       </div>
                     )}
                   </div>
 
+                  {/* Botão QR Code */}
                   <button
                     onClick={() => showTicketQR(ticket)}
-                    className="btn-primary w-full"
+                    className="w-full py-3 rounded-lg font-bold text-sm transition-all duration-300 hover:shadow-glow hover:scale-105"
+                    style={{ backgroundColor: '#C4F82A', color: '#0A0B0D' }}
                   >
                     Ver QR Code
                   </button>

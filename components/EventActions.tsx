@@ -28,14 +28,17 @@ export default function EventActions({ eventId, eventTitle }: EventActionsProps)
         method: 'DELETE',
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        throw new Error('Erro ao excluir evento')
+        throw new Error(data.error || 'Erro ao excluir evento')
       }
 
+      alert('Evento excluído com sucesso!')
       router.refresh()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao excluir evento:', error)
-      alert('Erro ao excluir evento. Tente novamente.')
+      alert(error.message || 'Erro ao excluir evento. Tente novamente.')
     } finally {
       setIsDeleting(false)
     }
@@ -45,16 +48,16 @@ export default function EventActions({ eventId, eventTitle }: EventActionsProps)
     <>
       <button
         onClick={handleEdit}
-        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition-colors"
+        className="px-4 py-2 bg-card hover:bg-card-hover text-foreground rounded-lg text-sm transition-colors"
       >
-        ✏️ Editar
+        Editar
       </button>
       <button
         onClick={handleDelete}
         disabled={isDeleting}
-        className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="px-4 py-2 bg-card hover:bg-red-600/20 text-red-500 hover:text-red-400 rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isDeleting ? '🗑️ Excluindo...' : '🗑️ Excluir'}
+        {isDeleting ? 'Excluindo...' : 'Excluir'}
       </button>
     </>
   )

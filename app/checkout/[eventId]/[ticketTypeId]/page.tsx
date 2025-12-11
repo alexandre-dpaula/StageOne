@@ -30,6 +30,14 @@ export default function CheckoutPage({ params }: { params: { eventId: string; ti
     try {
       const supabase = createClient()
 
+      // Check authentication first
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        // Redirect to login with return URL
+        router.push(`/login?redirect=/checkout/${params.eventId}/${params.ticketTypeId}`)
+        return
+      }
+
       const [{ data: eventData }, { data: ticketData }] = await Promise.all([
         supabase.from('events').select('*').eq('id', params.eventId).single(),
         supabase.from('tickets_types').select('*').eq('id', params.ticketTypeId).single(),
@@ -38,17 +46,14 @@ export default function CheckoutPage({ params }: { params: { eventId: string; ti
       setEvent(eventData)
       setTicketType(ticketData)
 
-      // Pre-fill with user data if logged in
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const { data: userData } = await supabase.from('users').select('*').eq('id', user.id).single()
-        if (userData) {
-          setFormData({
-            buyer_name: userData.name || '',
-            buyer_email: userData.email || '',
-            buyer_phone: userData.phone || '',
-          })
-        }
+      // Pre-fill with user data
+      const { data: userData } = await supabase.from('users').select('*').eq('id', user.id).single()
+      if (userData) {
+        setFormData({
+          buyer_name: userData.name || '',
+          buyer_email: userData.email || '',
+          buyer_phone: userData.phone || '',
+        })
       }
     } catch (err) {
       setError('Erro ao carregar dados')
