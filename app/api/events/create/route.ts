@@ -14,16 +14,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Não autenticado' }, { status: 401 })
     }
 
-    // Check user role
+    // Get user data
     const { data: user } = await supabase
       .from('users')
       .select('*')
       .eq('id', authUser.id)
       .single()
 
-    if (!user || !['ADMIN', 'PALESTRANTE'].includes(user.role)) {
-      return NextResponse.json({ error: 'Sem permissão' }, { status: 403 })
+    if (!user) {
+      return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 })
     }
+
+    // REMOVIDO: Auto-upgrade de PARTICIPANTE para PALESTRANTE
+    // Nova lógica: Todos os usuários podem criar eventos sem mudança de role
+    // A navegação é baseada em hasEvents (se já criou eventos), não no role
 
     // Parse request body
     const body = await request.json()

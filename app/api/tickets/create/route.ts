@@ -101,6 +101,50 @@ export async function POST(request: NextRequest) {
       // Não retornar erro pois o ticket foi criado com sucesso
     }
 
+    // REMOVIDO: Auto-upgrade ao comprar ingresso
+    // Nova lógica: Comprar ingresso NÃO promove para PALESTRANTE
+    // Apenas CRIAR EVENTO promove para PALESTRANTE
+    // Isso evita confusão: "Por que vejo 'Meus Eventos' se nunca criei nada?"
+
+    // Get user FCM token for push notification
+    const { data: userProfile } = await supabase
+      .from('users')
+      .select('fcm_token')
+      .eq('id', user.id)
+      .single()
+
+    // Send push notification
+    try {
+      if (userProfile?.fcm_token) {
+        await fetch('https://fcm.googleapis.com/fcm/send', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `key=${process.env.FIREBASE_SERVER_KEY}`,
+          },
+          body: JSON.stringify({
+            to: userProfile.fcm_token,
+            notification: {
+              title: '🎉 Ingresso Confirmado!',
+              body: `Seu ingresso para "${event.title}" foi confirmado com sucesso!`,
+              icon: '/icon-192x192.png',
+              badge: '/icon-192x192.png',
+              tag: 'ticket-notification',
+              requireInteraction: true,
+            },
+            data: {
+              ticketId: ticket.id,
+              eventId: event.id,
+              url: '/meus-ingressos',
+            },
+          }),
+        })
+      }
+    } catch (notificationError) {
+      console.error('Erro ao enviar notificação push, mas ticket foi criado:', notificationError)
+      // Não retornar erro pois o ticket foi criado com sucesso
+    }
+
     return NextResponse.json({ success: true, ticket }, { status: 201 })
   } catch (error: any) {
     console.error('Error creating ticket:', error)

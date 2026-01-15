@@ -14,7 +14,9 @@ export default async function NovoEventoPalestrantePage() {
 
   const { data: user } = await supabase.from('users').select('*').eq('id', authUser.id).single()
 
-  if (!user || !['ADMIN', 'PALESTRANTE'].includes(user.role)) redirect('/')
+  // Permitir todos usuários autenticados criarem eventos
+  // PARTICIPANTE será promovido a PALESTRANTE automaticamente ao criar evento
+  if (!user) redirect('/')
 
   return (
     <div className="min-h-screen bg-background">

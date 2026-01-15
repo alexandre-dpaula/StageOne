@@ -6,6 +6,7 @@ import { TicketWithEventAndType } from '@/types/database.types'
 import { formatDateTime, formatCurrency } from '@/lib/utils'
 import QRCode from 'qrcode'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function MeusIngressosPage() {
   const [tickets, setTickets] = useState<TicketWithEventAndType[]>([])
@@ -79,57 +80,42 @@ export default function MeusIngressosPage() {
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <h1 className="text-3xl font-bold text-foreground mb-8">Meus Ingressos</h1>
+      <div className="max-w-7xl mx-auto py-12">
+        <div className="px-4 sm:px-6 md:px-12">
+          <h1 className="text-3xl font-bold text-foreground mb-8">Meus Ingressos</h1>
+        </div>
 
         {tickets.length === 0 ? (
-          <div className="bg-card rounded-lg p-12 text-center">
-            <p className="text-placeholder mb-4">Você ainda não possui ingressos</p>
-            <Link
-              href="/"
-              className="btn-primary inline-block"
-            >
-              Ver Eventos Disponíveis
-            </Link>
+          <div className="px-4 sm:px-6 md:px-12">
+            <div className="bg-card rounded-lg p-12 text-center">
+              <p className="text-placeholder mb-4">Você ainda não possui ingressos</p>
+              <Link
+                href="/"
+                className="btn-primary inline-block"
+              >
+                Ver Eventos Disponíveis
+              </Link>
+            </div>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {tickets.map((ticket) => (
-              <div key={ticket.id} className="bg-card rounded-xl overflow-hidden border border-border/30 hover:border-primary/20 transition-all duration-300 hover:shadow-lg">
-                {/* Cover Image */}
+          <div className="relative px-4 sm:px-6 md:px-12">
+            <div className="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
+              {tickets.map((ticket) => (
+                <div key={ticket.id} className="flex-none w-[312px] sm:w-[340px] md:w-[360px] lg:w-[380px] snap-start">
+                  <div className="bg-card rounded-xl overflow-hidden border border-border/30 hover:border-primary/20 transition-all duration-300 hover:shadow-lg h-full">
                 <div className="relative h-56 bg-background/50 group overflow-hidden">
-                  {ticket.event.cover_image ? (
-                    <img
-                      src={ticket.event.cover_image}
-                      alt={ticket.event.title}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-card to-background/80">
-                      <svg
-                        className="w-16 h-16 text-placeholder/40"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={1.5}
-                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                      </svg>
-                    </div>
-                  )}
-
-                  {/* Gradient Overlay com hover */}
+                  <img
+                    src={ticket.event.cover_image || '/placeholder-event.jpg'}
+                    alt={ticket.event.title}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <p className="text-foreground text-sm line-clamp-2">{ticket.event.subtitle || ticket.event.description}</p>
+                      <p className="text-foreground text-sm line-clamp-2">
+                        {ticket.ticket_type.description || ticket.event.subtitle || ticket.event.description}
+                      </p>
                     </div>
                   </div>
-
-                  {/* Status Badge */}
                   <div className="absolute top-3 right-3">
                     <span
                       className={`px-3 py-1.5 rounded-full text-xs font-bold backdrop-blur-md ${
@@ -149,37 +135,26 @@ export default function MeusIngressosPage() {
                   </div>
                 </div>
 
-                {/* Content */}
                 <div className="p-5">
-                  {/* Título do Evento */}
-                  <h3 className="text-lg font-bold text-foreground mb-4 line-clamp-2">{ticket.event.title}</h3>
+                  <h3 className="text-lg font-bold text-foreground mb-4 line-clamp-2">
+                    {ticket.event.title}
+                  </h3>
 
-                  {/* Informações em Grid */}
                   <div className="grid grid-cols-2 gap-3 mb-4 pb-4 border-b border-border/30">
                     <div>
                       <p className="text-placeholder text-xs mb-1 font-medium">📅 Data</p>
                       <p className="text-foreground text-sm font-semibold">{formatDateTime(ticket.event.start_datetime)}</p>
                     </div>
-
                     <div>
                       <p className="text-placeholder text-xs mb-1 font-medium">📍 Local</p>
                       <p className="text-foreground text-sm font-semibold truncate">{ticket.event.location_name}</p>
                     </div>
-
                     <div className="col-span-2">
                       <p className="text-placeholder text-xs mb-1 font-medium">🎫 Tipo de Ingresso</p>
                       <p className="text-primary text-sm font-bold">{ticket.ticket_type.name}</p>
                     </div>
-
-                    {ticket.checked_in_at && (
-                      <div className="col-span-2">
-                        <p className="text-placeholder text-xs mb-1 font-medium">✓ Check-in realizado</p>
-                        <p className="text-green-500 text-sm font-semibold">{formatDateTime(ticket.checked_in_at)}</p>
-                      </div>
-                    )}
                   </div>
 
-                  {/* Botão QR Code */}
                   <button
                     onClick={() => showTicketQR(ticket)}
                     className="w-full py-3 rounded-lg font-bold text-sm transition-all duration-300 hover:shadow-glow hover:scale-105"
@@ -187,9 +162,19 @@ export default function MeusIngressosPage() {
                   >
                     Ver QR Code
                   </button>
+
+                  {ticket.checked_in_at && (
+                    <div className="mt-3 bg-green-500/10 border border-green-500/30 rounded-lg p-2">
+                      <p className="text-green-500 text-xs font-semibold text-center">
+                        ✓ Check-in: {formatDateTime(ticket.checked_in_at)}
+                      </p>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -210,13 +195,11 @@ export default function MeusIngressosPage() {
 
             <div className="bg-gray-100 rounded-lg p-6 mb-4">
               <p className="text-gray-900 font-bold text-center mb-2">{selectedTicket.event.title}</p>
-              <p className="text-gray-600 text-sm text-center mb-4">
-                {selectedTicket.ticket_type.name}
-              </p>
+              <p className="text-gray-600 text-sm text-center mb-4">{selectedTicket.ticket_type.name}</p>
 
               <div className="flex justify-center mb-4">
                 {qrCodeUrl && (
-                  <img src={qrCodeUrl} alt="QR Code" className="w-64 h-64" />
+                  <Image src={qrCodeUrl} alt="QR Code" width={256} height={256} className="rounded-lg" />
                 )}
               </div>
 

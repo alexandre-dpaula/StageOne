@@ -1,36 +1,25 @@
 import { createClient } from '@/lib/supabase/server'
-import { Event, User } from '@/types/database.types'
+import { EventWithTicketTypes } from '@/types/database.types'
+import { getUserWithMeta } from '@/lib/get-user-with-meta'
 import Navbar from '@/components/Navbar'
 import EventCarousel from '@/components/EventCarousel'
 import EventSearch from '@/components/EventSearch'
-import Link from 'next/link'
-import Image from 'next/image'
 
 export default async function HomePage() {
   const supabase = await createClient()
 
-  // Get current user
-  const {
-    data: { user: authUser },
-  } = await supabase.auth.getUser()
+  // Get current user with metadata (hasTickets, hasEvents)
+  const user = await getUserWithMeta()
 
-  let user: User | null = null
-  if (authUser) {
-    const { data } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', authUser.id)
-      .single()
-    user = data
-  }
-
-  // Fetch published events
+  // Fetch published events with ticket types
   const { data: events } = await supabase
     .from('events')
-    .select('*')
+    .select(`
+      *,
+      ticket_types:tickets_types(*)
+    `)
     .eq('is_published', true)
     .order('start_datetime', { ascending: true })
-    .returns<Event[]>()
 
   // Categorize events
   const now = new Date()
@@ -92,22 +81,6 @@ export default async function HomePage() {
           {/* Search Component */}
           <div className="animate-slide-up">
             <EventSearch allEvents={events || []} />
-          </div>
-
-          {/* CTA Criar Evento */}
-          <div className="mt-12 sm:mt-16 md:mt-20 text-center animate-fade-in px-4" style={{ animationDelay: '0.4s' }}>
-            <Link
-              href="/painel/admin/eventos/novo"
-              className="inline-flex items-center gap-2 bg-primary text-background px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold text-base sm:text-lg transition-all duration-300 hover:scale-105 hover:shadow-glow-lg"
-            >
-              <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              Criar Evento
-            </Link>
-            <p className="text-white text-base sm:text-lg md:text-xl mt-3" style={{ opacity: 1 }}>
-              Monte seu Orçamento Sob Medida
-            </p>
           </div>
         </div>
       </section>

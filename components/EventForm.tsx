@@ -65,11 +65,17 @@ export default function EventForm({ backUrl, redirectBase }: EventFormProps) {
   const [startDate, setStartDate] = useState('')
   const [startTime, setStartTime] = useState('')
   const [capacity, setCapacity] = useState('')
+  const [useOfficialLocation, setUseOfficialLocation] = useState(true)
   const [locationName, setLocationName] = useState(OFFICIAL_LOCATION.name)
   const [address, setAddress] = useState(OFFICIAL_LOCATION.address)
   const [city, setCity] = useState(OFFICIAL_LOCATION.city)
   const [state, setState] = useState(OFFICIAL_LOCATION.state)
   const [isPublished, setIsPublished] = useState(false)
+
+  // Serviços adicionais
+  const [hasAudiovisual, setHasAudiovisual] = useState(false)
+  const [hasCoverage, setHasCoverage] = useState(false)
+  const [hasCoffeeBreak, setHasCoffeeBreak] = useState(false)
 
   // Modules
   const [modules, setModules] = useState<Module[]>([{ id: createTempId(), title: '', hours: 0 }])
@@ -89,6 +95,35 @@ export default function EventForm({ backUrl, redirectBase }: EventFormProps) {
     'SAÚDE',
     'EDUCAÇÃO',
   ]
+
+  // Preços dos serviços adicionais
+  const AUDIOVISUAL_PRICE = 500
+  const COVERAGE_PRICE = 800
+  const COFFEE_BREAK_PRICE_PER_PERSON = 15
+
+  // Calcular preços dos adicionais
+  const calculateExtras = () => {
+    let total = 0
+    const extras = []
+
+    if (hasAudiovisual) {
+      total += AUDIOVISUAL_PRICE
+      extras.push({ name: 'Audiovisual', price: AUDIOVISUAL_PRICE })
+    }
+
+    if (hasCoverage) {
+      total += COVERAGE_PRICE
+      extras.push({ name: 'Cobertura/Gravação', price: COVERAGE_PRICE })
+    }
+
+    if (hasCoffeeBreak && capacity) {
+      const coffeePrice = COFFEE_BREAK_PRICE_PER_PERSON * parseInt(capacity || '0')
+      total += coffeePrice
+      extras.push({ name: `Coffee Break (${capacity} pessoas)`, price: coffeePrice })
+    }
+
+    return { total, extras }
+  }
 
   const addModule = () => {
     setModules([...modules, { id: createTempId(), title: '', hours: 0 }])
@@ -475,53 +510,247 @@ export default function EventForm({ backUrl, redirectBase }: EventFormProps) {
           <h2 className="text-2xl font-bold text-foreground mb-4">Localização</h2>
 
           <div className="space-y-4">
-            <div>
-              <label className="block text-foreground text-sm mb-2">Nome do Local</label>
-              <input
-                type="text"
-                value={locationName}
-                onChange={(e) => setLocationName(e.target.value)}
-                className="w-full bg-background text-foreground px-4 py-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="Ex: Centro de Convenções"
-              />
-            </div>
-
-            <div>
-              <label className="block text-foreground text-sm mb-2">Endereço</label>
-              <input
-                type="text"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                className="w-full bg-background text-foreground px-4 py-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="Ex: Rua das Flores, 123"
-              />
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-foreground text-sm mb-2">Cidade</label>
-                <input
-                  type="text"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  className="w-full bg-background text-foreground px-4 py-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Ex: São Paulo"
-                />
+            {/* Card do Local Oficial */}
+            <button
+              type="button"
+              onClick={() => {
+                setUseOfficialLocation(true)
+                setLocationName(OFFICIAL_LOCATION.name)
+                setAddress(OFFICIAL_LOCATION.address)
+                setCity(OFFICIAL_LOCATION.city)
+                setState(OFFICIAL_LOCATION.state)
+              }}
+              className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
+                useOfficialLocation
+                  ? 'border-primary bg-primary/10'
+                  : 'border-border hover:border-primary/50'
+              }`}
+            >
+              <div className="flex items-start gap-3">
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                  useOfficialLocation ? 'border-primary bg-primary' : 'border-border'
+                }`}>
+                  {useOfficialLocation && (
+                    <svg className="w-3 h-3 text-background" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span className="font-semibold text-foreground">Local StageOne</span>
+                  </div>
+                  <p className="text-sm text-placeholder mb-1">{OFFICIAL_LOCATION.name}</p>
+                  <p className="text-xs text-placeholder">{OFFICIAL_LOCATION.address}</p>
+                  <p className="text-xs text-placeholder mt-1">{OFFICIAL_LOCATION.city} - {OFFICIAL_LOCATION.state}</p>
+                </div>
               </div>
+            </button>
 
-              <div>
-                <label className="block text-foreground text-sm mb-2">Estado</label>
-                <input
-                  type="text"
-                  value={state}
-                  onChange={(e) => setState(e.target.value)}
-                  className="w-full bg-background text-foreground px-4 py-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Ex: SP"
-                  maxLength={2}
-                />
+            {/* Opção Novo Local */}
+            <button
+              type="button"
+              onClick={() => {
+                setUseOfficialLocation(false)
+                setLocationName('')
+                setAddress('')
+                setCity('')
+                setState('')
+              }}
+              className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
+                !useOfficialLocation
+                  ? 'border-primary bg-primary/10'
+                  : 'border-border hover:border-primary/50'
+              }`}
+            >
+              <div className="flex items-start gap-3">
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                  !useOfficialLocation ? 'border-primary bg-primary' : 'border-border'
+                }`}>
+                  {!useOfficialLocation && (
+                    <svg className="w-3 h-3 text-background" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span className="font-semibold text-foreground">Novo Local</span>
+                  </div>
+                  <p className="text-sm text-placeholder mt-1">Adicionar endereço personalizado</p>
+                </div>
               </div>
-            </div>
+            </button>
+
+            {/* Formulário de Novo Local */}
+            {!useOfficialLocation && (
+              <div className="space-y-4 mt-4 p-4 bg-background/50 rounded-lg border border-border/30">
+                <div>
+                  <label className="block text-foreground text-sm mb-2">Nome do Local</label>
+                  <input
+                    type="text"
+                    value={locationName}
+                    onChange={(e) => setLocationName(e.target.value)}
+                    className="w-full bg-background text-foreground px-4 py-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="Ex: Centro de Convenções"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-foreground text-sm mb-2">Endereço</label>
+                  <input
+                    type="text"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    className="w-full bg-background text-foreground px-4 py-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="Ex: Rua das Flores, 123"
+                    required
+                  />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-foreground text-sm mb-2">Cidade</label>
+                    <input
+                      type="text"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      className="w-full bg-background text-foreground px-4 py-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="Ex: São Paulo"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-foreground text-sm mb-2">Estado</label>
+                    <input
+                      type="text"
+                      value={state}
+                      onChange={(e) => setState(e.target.value)}
+                      className="w-full bg-background text-foreground px-4 py-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="Ex: SP"
+                      maxLength={2}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
+        </div>
+
+        {/* Serviços Adicionais */}
+        <div className="glass rounded-2xl p-6 border border-border/30">
+          <h2 className="text-2xl font-bold text-foreground mb-4">Serviços Adicionais</h2>
+          <p className="text-placeholder text-sm mb-6">
+            Selecione os serviços extras que deseja incluir no evento
+          </p>
+
+          <div className="space-y-4">
+            <label className="flex items-start gap-4 p-4 rounded-lg border border-border hover:border-primary/50 transition-all cursor-pointer bg-background">
+              <input
+                type="checkbox"
+                checked={hasAudiovisual}
+                onChange={(e) => setHasAudiovisual(e.target.checked)}
+                className="w-5 h-5 mt-1 rounded bg-card border-border text-primary focus:ring-primary"
+              />
+              <div className="flex-1">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <span className="text-foreground font-semibold block">Audiovisual</span>
+                    <span className="text-placeholder text-sm">Equipamento completo: projetor, tela, som</span>
+                  </div>
+                  <span className="text-primary font-bold">
+                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(AUDIOVISUAL_PRICE)}
+                  </span>
+                </div>
+              </div>
+            </label>
+
+            <label className="flex items-start gap-4 p-4 rounded-lg border border-border hover:border-primary/50 transition-all cursor-pointer bg-background">
+              <input
+                type="checkbox"
+                checked={hasCoverage}
+                onChange={(e) => setHasCoverage(e.target.checked)}
+                className="w-5 h-5 mt-1 rounded bg-card border-border text-primary focus:ring-primary"
+              />
+              <div className="flex-1">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <span className="text-foreground font-semibold block">Cobertura/Gravação do Evento</span>
+                    <span className="text-placeholder text-sm">Fotografia e vídeo profissional</span>
+                  </div>
+                  <span className="text-primary font-bold">
+                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(COVERAGE_PRICE)}
+                  </span>
+                </div>
+              </div>
+            </label>
+
+            <label className="flex items-start gap-4 p-4 rounded-lg border border-border hover:border-primary/50 transition-all cursor-pointer bg-background">
+              <input
+                type="checkbox"
+                checked={hasCoffeeBreak}
+                onChange={(e) => setHasCoffeeBreak(e.target.checked)}
+                className="w-5 h-5 mt-1 rounded bg-card border-border text-primary focus:ring-primary"
+              />
+              <div className="flex-1">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <span className="text-foreground font-semibold block">Coffee Break</span>
+                    <span className="text-placeholder text-sm">
+                      Café, lanches e bebidas ({capacity ? `${capacity} pessoas` : 'informe a capacidade'})
+                    </span>
+                  </div>
+                  <span className="text-primary font-bold">
+                    {capacity
+                      ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
+                          COFFEE_BREAK_PRICE_PER_PERSON * parseInt(capacity)
+                        )
+                      : `R$ ${COFFEE_BREAK_PRICE_PER_PERSON}/pessoa`
+                    }
+                  </span>
+                </div>
+              </div>
+            </label>
+          </div>
+
+          {/* Preview de Valores */}
+          {(() => {
+            const { total, extras } = calculateExtras()
+            if (extras.length > 0) {
+              return (
+                <div className="mt-6 p-4 rounded-lg border-2 border-primary/30 bg-primary/5">
+                  <h3 className="text-foreground font-bold mb-3">Resumo dos Serviços Adicionais</h3>
+                  <div className="space-y-2">
+                    {extras.map((extra, index) => (
+                      <div key={index} className="flex justify-between text-sm">
+                        <span className="text-placeholder">{extra.name}</span>
+                        <span className="text-foreground font-semibold">
+                          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(extra.price)}
+                        </span>
+                      </div>
+                    ))}
+                    <div className="pt-3 border-t border-border flex justify-between">
+                      <span className="text-foreground font-bold">Total dos Adicionais</span>
+                      <span className="text-primary font-bold text-lg">
+                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(total)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )
+            }
+            return null
+          })()}
         </div>
 
         {/* Módulos */}

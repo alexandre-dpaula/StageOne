@@ -14,10 +14,18 @@ export default async function EventoPage({ params }: { params: { slug: string } 
     data: { user: authUser },
   } = await supabase.auth.getUser()
 
-  let user: User | null = null
+  let user: (User & { hasTickets?: boolean }) | null = null
   if (authUser) {
-    const { data } = await supabase.from('users').select('*').eq('id', authUser.id).single()
-    user = data
+    const [{ data }, { count: ticketsCount }] = await Promise.all([
+      supabase.from('users').select('*').eq('id', authUser.id).single(),
+      supabase
+        .from('tickets')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', authUser.id),
+    ])
+    if (data) {
+      user = { ...data, hasTickets: (ticketsCount || 0) > 0 }
+    }
   }
 
   // Fetch event
@@ -220,7 +228,7 @@ export default async function EventoPage({ params }: { params: { slug: string } 
                           </div>
                           <p className="text-[10px] sm:text-xs text-placeholder mb-2 sm:mb-3">{available} vagas disponíveis</p>
                           <Link
-                            href={`/checkout/${event.id}/${ticket.id}`}
+                            href={`/checkout-v2/${event.id}/${ticket.id}`}
                             className="btn-primary block w-full text-center text-sm sm:text-base py-2 sm:py-3"
                           >
                             Comprar

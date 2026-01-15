@@ -23,8 +23,7 @@ export default async function UsuariosAdminPage() {
 
   const totalUsers = users?.length || 0
   const admins = users?.filter(u => u.role === 'ADMIN').length || 0
-  const palestrantes = users?.filter(u => u.role === 'PALESTRANTE').length || 0
-  const participantes = users?.filter(u => u.role === 'PARTICIPANTE').length || 0
+  const regularUsers = users?.filter(u => u.role !== 'ADMIN').length || 0
 
   return (
     <div className="min-h-screen bg-background">
@@ -42,7 +41,7 @@ export default async function UsuariosAdminPage() {
         <h1 className="text-3xl font-bold text-foreground mb-8">Gerenciar Usuários</h1>
 
         {/* Stats */}
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
           <div className="bg-card rounded-lg p-6">
             <p className="text-placeholder text-sm">Total de Usuários</p>
             <p className="text-4xl font-bold text-foreground mt-2">{totalUsers}</p>
@@ -52,12 +51,8 @@ export default async function UsuariosAdminPage() {
             <p className="text-4xl font-bold text-primary mt-2">{admins}</p>
           </div>
           <div className="bg-card rounded-lg p-6">
-            <p className="text-placeholder text-sm">Palestrantes</p>
-            <p className="text-4xl font-bold text-blue-500 mt-2">{palestrantes}</p>
-          </div>
-          <div className="bg-card rounded-lg p-6">
-            <p className="text-placeholder text-sm">Participantes</p>
-            <p className="text-4xl font-bold text-green-500 mt-2">{participantes}</p>
+            <p className="text-placeholder text-sm">Usuários</p>
+            <p className="text-4xl font-bold text-blue-500 mt-2">{regularUsers}</p>
           </div>
         </div>
 
@@ -107,12 +102,10 @@ export default async function UsuariosAdminPage() {
                           className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
                             u.role === 'ADMIN'
                               ? 'bg-primary/20 text-primary'
-                              : u.role === 'PALESTRANTE'
-                              ? 'bg-blue-500/20 text-blue-500'
-                              : 'bg-green-500/20 text-green-500'
+                              : 'bg-blue-500/20 text-blue-500'
                           }`}
                         >
-                          {u.role}
+                          {u.role === 'ADMIN' ? 'ADMIN' : 'USER'}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-placeholder text-sm">

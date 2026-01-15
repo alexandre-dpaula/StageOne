@@ -10,6 +10,14 @@ export function formatDate(date: string | Date): string {
   }).format(new Date(date))
 }
 
+export function formatDateShort(date: string | Date): string {
+  const d = new Date(date)
+  const day = d.getDate().toString().padStart(2, '0')
+  const month = d.toLocaleDateString('pt-BR', { month: 'short' }).toUpperCase().replace('.', '')
+  const year = d.getFullYear()
+  return `${day} ${month} ${year}`
+}
+
 export function formatDateTime(date: string | Date): string {
   return new Intl.DateTimeFormat('pt-BR', {
     dateStyle: 'long',
@@ -21,6 +29,8 @@ export function formatCurrency(value: number): string {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   }).format(value)
 }
 

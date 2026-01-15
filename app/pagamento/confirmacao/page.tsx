@@ -1,0 +1,97 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
+import Button from '@/components/ui/Button'
+
+export default function PaymentConfirmationPage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const bookingId = searchParams.get('booking_id')
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
+  const [message, setMessage] = useState('')
+
+  useEffect(() => {
+    if (!bookingId) {
+      setStatus('error')
+      setMessage('ID da reserva não encontrado')
+      return
+    }
+
+    checkPaymentStatus()
+  }, [bookingId])
+
+  async function checkPaymentStatus() {
+    try {
+      const supabase = createClient()
+
+      const { data: booking, error } = await supabase
+        .from('bookings')
+        .select('payment_status')
+        .eq('id', bookingId)
+        .single()
+
+      if (error || !booking) {
+        setStatus('error')
+        setMessage('Reserva não encontrada')
+        return
+      }
+
+      if (booking.payment_status === 'PAID') {
+        setStatus('success')
+        setMessage('Pagamento confirmado com sucesso!')
+      } else {
+        setStatus('error')
+        setMessage('Aguardando confirmação do pagamento...')
+      }
+    } catch (err) {
+      setStatus('error')
+      setMessage('Erro ao verificar status do pagamento')
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+      <div className="max-w-md w-full bg-card rounded-lg p-8 text-center">
+        {status === 'loading' && (
+          <>
+            <div className="text-4xl mb-4">⏳</div>
+            <h1 className="text-2xl font-bold text-foreground mb-2">Verificando Pagamento</h1>
+            <p className="text-placeholder">Aguarde um momento...</p>
+          </>
+        )}
+
+        {status === 'success' && (
+          <>
+            <div className="text-6xl mb-4">✓</div>
+            <h1 className="text-2xl font-bold text-foreground mb-2">Pagamento Confirmado!</h1>
+            <p className="text-placeholder mb-6">{message}</p>
+            <p className="text-sm text-placeholder mb-6">
+              Um e-mail de confirmação foi enviado com todos os detalhes do seu ingresso.
+            </p>
+            <Button onClick={() => router.push('/meus-ingressos')} className="w-full">
+              Ver Meus Ingressos
+            </Button>
+          </>
+        )}
+
+        {status === 'error' && (
+          <>
+            <div className="text-6xl mb-4">⚠️</div>
+            <h1 className="text-2xl font-bold text-foreground mb-2">Atenção</h1>
+            <p className="text-placeholder mb-6">{message}</p>
+            <div className="space-y-3">
+              <Button onClick={() => checkPaymentStatus()} variant="secondary" className="w-full">
+                Verificar Novamente
+              </Button>
+              <Button onClick={() => router.push('/meus-ingressos')} className="w-full">
+                Ir para Meus Ingressos
+              </Button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}

@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { formatDateTime, formatCurrency } from '@/lib/utils'
+import { Ticket, Users, UserCheck, Clock } from 'lucide-react'
 
 export default async function EventoAdminPage({ params }: { params: { eventId: string } }) {
   const supabase = await createClient()
@@ -94,28 +95,55 @@ export default async function EventoAdminPage({ params }: { params: { eventId: s
           <p className="text-placeholder">{event.subtitle}</p>
         </div>
 
-        {/* Stats */}
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-card rounded-lg p-6">
-            <p className="text-placeholder text-sm">Ingressos Vendidos</p>
-            <p className="text-4xl font-bold text-foreground mt-2">{paidTickets}</p>
+        {/* Stats - Mini Cards */}
+        <div className="flex flex-wrap gap-3 mb-8">
+          {/* Ingressos Vendidos */}
+          <div className="rounded-xl px-4 py-3 hover:shadow-glow-md transition-all group flex items-center gap-3" style={{ backgroundColor: '#C4F82A', color: '#0A0B0D' }}>
+            <div className="w-10 h-10 rounded-lg bg-black/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Ticket className="w-5 h-5" style={{ color: '#0A0B0D' }} />
+            </div>
+            <div>
+              <p className="text-xs font-bold opacity-80">Ingressos Vendidos</p>
+              <p className="text-2xl font-bold">{paidTickets}</p>
+            </div>
           </div>
-          <div className="bg-card rounded-lg p-6">
-            <p className="text-placeholder text-sm">Capacidade</p>
-            <p className="text-4xl font-bold text-blue-500 mt-2">{event.capacity}</p>
+
+          {/* Capacidade */}
+          <div className="glass rounded-xl px-4 py-3 border border-border/30 hover:border-primary/30 transition-all group flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Users className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p className="text-xs text-placeholder font-medium">Capacidade</p>
+              <p className="text-2xl font-bold text-foreground">{event.capacity}</p>
+            </div>
           </div>
-          <div className="bg-card rounded-lg p-6">
-            <p className="text-placeholder text-sm">Check-in Realizado</p>
-            <p className="text-4xl font-bold text-green-500 mt-2">{checkedIn}</p>
+
+          {/* Check-in Realizado */}
+          <div className="glass rounded-xl px-4 py-3 border border-border/30 hover:border-accent-green/30 transition-all group flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-accent-green/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <UserCheck className="w-5 h-5 text-accent-green" />
+            </div>
+            <div>
+              <p className="text-xs text-placeholder font-medium">Check-in Realizado</p>
+              <p className="text-2xl font-bold text-accent-green">{checkedIn}</p>
+            </div>
           </div>
-          <div className="bg-card rounded-lg p-6">
-            <p className="text-placeholder text-sm">Duração</p>
-            <p className="text-4xl font-bold text-primary mt-2">{event.total_hours}h</p>
+
+          {/* Duração */}
+          <div className="glass rounded-xl px-4 py-3 border border-border/30 hover:border-primary/30 transition-all group flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Clock className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p className="text-xs text-placeholder font-medium">Duração</p>
+              <p className="text-2xl font-bold text-foreground">{event.total_hours}h</p>
+            </div>
           </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
-          {/* Info */}
+          {/* Left Column: Info and Ticket Types (separate cards) */}
           <div className="space-y-6">
             <div className="bg-card rounded-lg p-6">
               <h2 className="text-xl font-bold text-foreground mb-4">Informações</h2>
@@ -140,24 +168,6 @@ export default async function EventoAdminPage({ params }: { params: { eventId: s
               </div>
             </div>
 
-            {/* Modules */}
-            {modules && modules.length > 0 && (
-              <div className="bg-card rounded-lg p-6">
-                <h2 className="text-xl font-bold text-foreground mb-4">Módulos</h2>
-                <div className="space-y-3">
-                  {modules.map((module: any) => (
-                    <div key={module.id} className="border-l-4 border-primary pl-4">
-                      <p className="text-foreground font-semibold">{module.title}</p>
-                      <p className="text-placeholder text-sm">{module.hours}h</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Ticket Types */}
-          <div>
             <div className="bg-card rounded-lg p-6">
               <h2 className="text-xl font-bold text-foreground mb-4">Tipos de Ingressos</h2>
               {ticketTypes && ticketTypes.length > 0 ? (
@@ -194,6 +204,23 @@ export default async function EventoAdminPage({ params }: { params: { eventId: s
                 <p className="text-placeholder text-sm">Nenhum tipo de ingresso configurado</p>
               )}
             </div>
+          </div>
+
+          {/* Right Column: Modules */}
+          <div className="bg-card rounded-lg p-6">
+            <h2 className="text-xl font-bold text-foreground mb-4">Módulos</h2>
+            {modules && modules.length > 0 ? (
+              <div className="space-y-3">
+                {modules.map((module: any) => (
+                  <div key={module.id} className="border-l-4 border-primary pl-4">
+                    <p className="text-foreground font-semibold">{module.title}</p>
+                    <p className="text-placeholder text-sm">{module.hours}h</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-placeholder text-sm">Nenhum módulo cadastrado</p>
+            )}
           </div>
         </div>
 

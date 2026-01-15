@@ -61,6 +61,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Erro ao criar reserva' }, { status: 500 })
     }
 
+    // REMOVIDO: Auto-upgrade de PARTICIPANTE para PALESTRANTE
+    // Nova lógica: Todos os usuários podem reservar espaço sem mudança de role
+    // A navegação é baseada em hasEvents (se criou evento após reserva), não no role
+
     return NextResponse.json({
       success: true,
       booking,

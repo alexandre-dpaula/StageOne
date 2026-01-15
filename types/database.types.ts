@@ -2,12 +2,15 @@
 // DATABASE TYPES - StageOne Platform
 // ============================================================================
 
-export type UserRole = 'ADMIN' | 'PALESTRANTE' | 'PARTICIPANTE';
+// Nova lógica simplificada: USER e ADMIN
+// PALESTRANTE e PARTICIPANTE mantidos temporariamente para compatibilidade
+export type UserRole = 'ADMIN' | 'USER' | 'PALESTRANTE' | 'PARTICIPANTE';
 export type EventMode = 'PRESENCIAL' | 'ONLINE' | 'HIBRIDO';
 export type EventLayout = 'AUDITORIO' | 'U' | 'ILHAS' | 'TEATRO' | 'CIRCULAR';
 export type TicketStatus = 'PENDING_PAYMENT' | 'PAID' | 'CANCELLED' | 'USED';
 export type PaymentStatus = 'PENDING' | 'PAID' | 'CANCELLED' | 'REFUNDED';
 export type BookingStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
+export type DiscountType = 'PERCENTAGE' | 'FIXED_AMOUNT';
 
 // ============================================================================
 // USER
@@ -108,6 +111,14 @@ export interface TicketType {
   sale_end?: string | null;
   is_active: boolean;
   created_at: string;
+
+  // Sistema de Lotes Automáticos
+  batch_number?: number;
+  auto_advance_by_date?: boolean;
+  auto_advance_by_quantity?: boolean;
+  quantity_threshold?: number | null;
+  next_batch_price?: number | null;
+  next_batch_date?: string | null;
 }
 
 export interface TicketTypeWithAvailability extends TicketType {
@@ -132,6 +143,12 @@ export interface Ticket {
   // QR Code and Status
   qr_code_token: string;
   status: TicketStatus;
+
+  // Pricing com cupom de desconto
+  coupon_id?: string | null;
+  original_price?: number | null;
+  discount_amount?: number;
+  final_price?: number | null;
 
   // Timestamps
   purchased_at: string;
@@ -331,4 +348,197 @@ export interface CreateBookingFormData {
   addons_price: number;
   discount_percentage: number;
   total_price: number;
+}
+
+// ============================================================================
+// CUPOM DE DESCONTO
+// ============================================================================
+export interface Coupon {
+  id: string;
+  code: string;
+  discount_type: DiscountType;
+  discount_value: number;
+  max_discount_amount?: number | null;
+
+  // Validade
+  valid_from: string;
+  valid_until?: string | null;
+
+  // Limites
+  usage_limit?: number | null;
+  usage_count: number;
+  usage_limit_per_user?: number;
+
+  // Aplicabilidade
+  event_id?: string | null;
+  ticket_type_id?: string | null;
+  minimum_purchase_amount?: number | null;
+
+  // Status e tracking
+  is_active: boolean;
+  tracking_source?: string | null;
+
+  // Metadata
+  description?: string | null;
+  created_by?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CouponUsage {
+  id: string;
+  coupon_id: string;
+  ticket_id: string;
+  user_id?: string | null;
+
+  original_price: number;
+  discount_amount: number;
+  final_price: number;
+
+  used_at: string;
+  ip_address?: string | null;
+  user_agent?: string | null;
+}
+
+export interface CouponValidationResult {
+  is_valid: boolean;
+  discount_amount: number;
+  final_price: number;
+  coupon_id?: string | null;
+  error_message?: string | null;
+}
+
+export interface CreateCouponFormData {
+  code: string;
+  discount_type: DiscountType;
+  discount_value: number;
+  max_discount_amount?: number;
+  valid_from: string;
+  valid_until?: string;
+  usage_limit?: number;
+  usage_limit_per_user?: number;
+  event_id?: string;
+  ticket_type_id?: string;
+  minimum_purchase_amount?: number;
+  tracking_source?: string;
+  description?: string;
+}
+
+// ============================================================================
+// CERTIFICADOS
+// ============================================================================
+export interface CertificateTemplate {
+  id: string;
+  name: string;
+  description?: string | null;
+  event_id?: string | null;
+
+  template_config: {
+    background_color: string;
+    primary_color: string;
+    accent_color?: string;
+    font_family: string;
+    logo_url?: string | null;
+    background_image_url?: string | null;
+    layout: string;
+    show_qr_code: boolean;
+    show_logo: boolean;
+    show_border?: boolean;
+    border_style?: string;
+    text_sections: {
+      title: string;
+      participant_prefix: string;
+      event_prefix: string;
+      hours_text: string;
+      completion_prefix: string;
+      footer?: string;
+    };
+    signature_sections?: Array<{
+      name: string;
+      title: string;
+    }>;
+  };
+
+  is_active: boolean;
+  is_default: boolean;
+  created_by?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Certificate {
+  id: string;
+  event_id: string;
+  ticket_id: string;
+  user_id: string;
+
+  participant_name: string;
+  event_title: string;
+  event_hours: number;
+  completion_date: string;
+
+  validation_token: string;
+  template_id?: string | null;
+  pdf_url?: string | null;
+
+  issued_at: string;
+  downloaded_at?: string | null;
+  validated_at?: string | null;
+  created_at: string;
+}
+
+export interface CertificateWithTemplate extends Certificate {
+  template?: CertificateTemplate | null;
+}
+
+export interface CertificateWithEvent extends Certificate {
+  event: Event;
+}
+
+// ============================================================================
+// ANALYTICS E RELATÓRIOS
+// ============================================================================
+export interface SalesAnalytics {
+  total_revenue: number;
+  total_tickets_sold: number;
+  total_tickets_checked_in: number;
+  checkin_rate: number;
+
+  sales_by_day: Array<{
+    date: string;
+    tickets: number;
+    revenue: number;
+  }>;
+
+  sales_by_ticket_type: Array<{
+    ticket_type_name: string;
+    tickets_sold: number;
+    revenue: number;
+    percentage: number;
+  }>;
+
+  sales_by_hour: Array<{
+    hour: number;
+    tickets: number;
+  }>;
+
+  coupon_usage: Array<{
+    coupon_code: string;
+    usage_count: number;
+    total_discount: number;
+  }>;
+}
+
+export interface EventReport {
+  event: Event;
+  analytics: SalesAnalytics;
+  participants: Array<{
+    name: string;
+    email: string;
+    phone?: string | null;
+    ticket_type: string;
+    purchase_date: string;
+    checked_in: boolean;
+    checkin_date?: string | null;
+  }>;
 }

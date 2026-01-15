@@ -55,6 +55,16 @@ body {
     box-shadow: 0 0 45px rgba(196, 248, 42, 0.5);
     transform: scale(1.05);
   }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
+  }
 }
 
 /* Custom scrollbar */

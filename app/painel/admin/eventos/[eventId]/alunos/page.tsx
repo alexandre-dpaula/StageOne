@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { formatDateTime } from '@/lib/utils'
+import { Ticket, CheckCircle, UserCheck, ArrowLeft, QrCode } from 'lucide-react'
 
 export default async function AlunosEventoPage({ params }: { params: { eventId: string } }) {
   const supabase = await createClient()
@@ -48,17 +49,22 @@ export default async function AlunosEventoPage({ params }: { params: { eventId: 
 
   return (
     <div className="min-h-screen bg-background">
-      <nav className="bg-card border-b border-card">
+      <nav className="glass border-b border-border/30">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <Link href="/painel/admin/eventos" className="text-xl font-bold text-primary">
-              ← Voltar aos Eventos
+            <Link
+              href="/painel/admin/eventos"
+              className="flex items-center gap-2 text-foreground hover:text-primary transition-colors group"
+            >
+              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+              <span className="font-semibold">Voltar aos Eventos</span>
             </Link>
             <Link
               href={`/checkin/${params.eventId}`}
-              className="px-4 py-2 rounded-lg font-semibold transition-colors hover:opacity-90"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold transition-all hover:shadow-glow-md hover:scale-105"
               style={{ backgroundColor: '#C4F82A', color: '#0A0B0D' }}
             >
+              <QrCode className="w-5 h-5" />
               Fazer Check-in
             </Link>
           </div>
@@ -66,22 +72,56 @@ export default async function AlunosEventoPage({ params }: { params: { eventId: 
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">{event.title}</h1>
-        <p className="text-placeholder mb-8">Lista de Participantes</p>
+        {/* Header com Título e Mini Stats */}
+        <div className="mb-8 animate-fade-in">
+          <h1 className="text-3xl font-bold text-foreground mb-4">{event.title}</h1>
 
-        {/* Stats */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-card rounded-lg p-6">
-            <p className="text-placeholder text-sm">Total de Ingressos</p>
-            <p className="text-4xl font-bold text-foreground mt-2">{totalTickets}</p>
-          </div>
-          <div className="bg-card rounded-lg p-6">
-            <p className="text-placeholder text-sm">Pagos</p>
-            <p className="text-4xl font-bold text-green-500 mt-2">{paidTickets}</p>
-          </div>
-          <div className="bg-card rounded-lg p-6">
-            <p className="text-placeholder text-sm">Check-in Realizado</p>
-            <p className="text-4xl font-bold text-blue-500 mt-2">{checkedInTickets}</p>
+          {/* Mini Stats Cards - Inline */}
+          <div className="flex flex-wrap gap-3">
+            {/* Total Tickets */}
+            <div className="glass rounded-xl px-4 py-3 border border-border/30 hover:border-primary/30 transition-all group flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Ticket className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-xs text-placeholder font-medium">Total</p>
+                <p className="text-2xl font-bold text-foreground">{totalTickets}</p>
+              </div>
+            </div>
+
+            {/* Paid Tickets */}
+            <div className="rounded-xl px-4 py-3 hover:shadow-glow-md transition-all group flex items-center gap-3" style={{ backgroundColor: '#C4F82A', color: '#0A0B0D' }}>
+              <div className="w-10 h-10 rounded-lg bg-black/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <CheckCircle className="w-5 h-5" style={{ color: '#0A0B0D' }} />
+              </div>
+              <div>
+                <p className="text-xs font-bold opacity-80">Pagos</p>
+                <p className="text-2xl font-bold">{paidTickets}</p>
+              </div>
+            </div>
+
+            {/* Check-in Done */}
+            <div className="glass rounded-xl px-4 py-3 border border-border/30 hover:border-accent-green/30 transition-all group flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-accent-green/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <UserCheck className="w-5 h-5 text-accent-green" />
+              </div>
+              <div>
+                <p className="text-xs text-placeholder font-medium">Check-in</p>
+                <p className="text-2xl font-bold text-accent-green">{checkedInTickets}</p>
+              </div>
+            </div>
+
+            {/* Percentage Badge */}
+            {paidTickets > 0 && (
+              <div className="glass rounded-xl px-4 py-3 border border-border/30 flex items-center gap-2">
+                <div className="text-center">
+                  <p className="text-xs text-placeholder font-medium mb-1">Taxa de Check-in</p>
+                  <p className="text-xl font-bold text-foreground">
+                    {Math.round((checkedInTickets / paidTickets) * 100)}%
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
+import { createClient } from '@/lib/supabase/client'
 
 interface ReservaData {
   horas: number
@@ -58,28 +59,25 @@ export default function CheckoutReservaPage() {
         throw new Error('Dados da reserva não encontrados')
       }
 
-      // MODO TESTE: Pular processamento de pagamento e ir direto para criação de evento
-      // Simular que a reserva foi criada com sucesso
-      const mockBookingId = 'test-booking-' + Date.now()
+      if (!formData.dataEvento) {
+        throw new Error('Informe a data do evento')
+      }
 
-      localStorage.setItem('booking_id', mockBookingId)
-      localStorage.removeItem('reserva')
+      const supabase = createClient()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
 
-      // Pequeno delay para simular processamento
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      if (!user) {
+        throw new Error('Faça login para concluir o pagamento')
+      }
 
-      // Redirecionar para criar evento
-      window.location.href = '/painel/admin/eventos/novo?from_booking=true'
-
-      /* CÓDIGO REAL (DESCOMENTADO QUANDO TERMINAR OS TESTES):
-
-      // Processar pagamento de reserva
       const response = await fetch('/api/bookings/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           hours: reserva.horas,
-          booking_date: formData.dataEvento,
+          booking_date: new Date(formData.dataEvento).toISOString(),
           has_audiovisual: reserva.adicionais.audiovisual,
           has_coverage: reserva.adicionais.cobertura,
           has_coffee_break: reserva.adicionais.coffeBreak,
@@ -96,13 +94,13 @@ export default function CheckoutReservaPage() {
         throw new Error(result.error || 'Erro ao processar reserva')
       }
 
-      // Salvar ID da reserva para vincular ao evento
-      localStorage.setItem('booking_id', result.booking.id)
+      const bookingId = result.booking?.id || `test-booking-${Date.now()}`
+      localStorage.setItem('booking_id', bookingId)
       localStorage.removeItem('reserva')
 
-      // Redirecionar para criar evento
+      await new Promise(resolve => setTimeout(resolve, 800))
+
       window.location.href = '/painel/admin/eventos/novo?from_booking=true'
-      */
     } catch (err: any) {
       setError(err.message || 'Erro ao processar pagamento')
     } finally {

@@ -4,33 +4,68 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { User } from '@/types/database.types'
 
+type NavbarUser = User & {
+  hasTickets?: boolean
+  hasEvents?: boolean // Novo: indica se o usuário tem eventos criados
+}
+
 interface NavbarProps {
-  user?: User | null
+  user?: NavbarUser | null
 }
 
 export default function Navbar({ user }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
+  // NOVA LÓGICA DE NAVEGAÇÃO ADAPTATIVA (Baseada em Ações, não em Roles):
+  // - Usuário SEM eventos: Mostra "Criar Evento" (CTA) + "Meus Ingressos"
+  // - Usuário COM eventos: Mostra "Meus Eventos" + "Meus Ingressos"
+  // - ADMIN: Mostra "Meus Eventos" (acesso total) + "Meus Ingressos"
+
+  const isAdmin = user?.role === 'ADMIN'
+  const hasEvents = user?.hasEvents ?? false
+
+  // Determina o que mostrar na navbar baseado em AÇÕES, não em roles
+  // Se o usuário NUNCA criou eventos → Mostra CTA "Criar Evento"
+  // Se o usuário JÁ CRIOU eventos → Mostra "Meus Eventos"
+  // ADMIN sempre vê "Meus Eventos" (tem acesso a tudo)
+  const showCriarEvento = !!user && !isAdmin && !hasEvents
+  const showMeusEventos = !!user && (isAdmin || hasEvents)
+  const showMeusIngressos = !!user // Sempre visível
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-border/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14 sm:h-16">
+          {/* Logo - Simplificada quando há itens de menu */}
           <Link href="/" className="text-lg sm:text-xl md:text-2xl text-primary hover:text-glow transition-all">
-            <span className="font-normal">Stage</span><span className="font-bold">One</span><sup className="text-[0.5em] top-[-0.3em] relative ml-0.5">™</sup>
+            {user ? (
+              // Logo compacta: St™ (quando usuário logado)
+              <>
+                <span className="font-bold">St</span><sup className="text-[0.5em] top-[-0.3em] relative ml-0.5">™</sup>
+              </>
+            ) : (
+              // Logo completa: StageOne™ (quando não logado - home page)
+              <>
+                <span className="font-normal">Stage</span><span className="font-bold">One</span><sup className="text-[0.5em] top-[-0.3em] relative ml-0.5">™</sup>
+              </>
+            )}
           </Link>
 
           <div className="hidden md:flex items-center gap-4 lg:gap-6">
             {user ? (
               <>
-                {user.role === 'ADMIN' && (
+                {/* Criar Evento (CTA para PARTICIPANTE ou PALESTRANTE sem eventos) */}
+                {showCriarEvento && (
                   <Link
-                    href="/painel/admin"
-                    className="text-placeholder hover:text-primary transition-colors font-medium text-sm lg:text-base"
+                    href="/painel/palestrante/eventos/novo"
+                    className="bg-primary text-background font-bold px-4 lg:px-5 py-1.5 lg:py-2 rounded-full text-xs lg:text-sm transition-all duration-300 hover:shadow-glow-md hover:scale-105"
                   >
-                    Painel Admin
+                    Criar Evento
                   </Link>
                 )}
-                {user.role === 'PALESTRANTE' && (
+
+                {/* Meus Eventos (para PALESTRANTE com eventos ou ADMIN) */}
+                {showMeusEventos && (
                   <Link
                     href="/painel/palestrante"
                     className="text-placeholder hover:text-primary transition-colors font-medium text-sm lg:text-base"
@@ -38,7 +73,9 @@ export default function Navbar({ user }: NavbarProps) {
                     Meus Eventos
                   </Link>
                 )}
-                {user.role === 'PARTICIPANTE' && (
+
+                {/* Meus Ingressos (sempre visível) */}
+                {showMeusIngressos && (
                   <Link
                     href="/meus-ingressos"
                     className="text-placeholder hover:text-primary transition-colors font-medium text-sm lg:text-base"
@@ -51,7 +88,8 @@ export default function Navbar({ user }: NavbarProps) {
                   <div className="w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0">
                     <span className="text-primary text-xs font-bold">{user.name?.charAt(0).toUpperCase()}</span>
                   </div>
-                  <span className="text-xs lg:text-sm text-foreground font-medium hidden lg:block max-w-[120px] truncate">{user.name}</span>
+                  {/* Nome do usuário - 14px fixo */}
+                  <span className="text-foreground font-medium hidden lg:block max-w-[120px] truncate" style={{ fontSize: '14px' }}>{user.name}</span>
                   <form action="/api/auth/logout" method="POST">
                     <button
                       type="submit"
@@ -116,16 +154,19 @@ export default function Navbar({ user }: NavbarProps) {
           <div className="px-4 py-3 space-y-2 max-h-[calc(100vh-3.5rem)] overflow-y-auto">
             {user ? (
               <>
-                {user.role === 'ADMIN' && (
+                {/* Criar Evento (CTA Mobile) */}
+                {showCriarEvento && (
                   <Link
-                    href="/painel/admin"
-                    className="block text-placeholder hover:text-primary transition-colors font-medium py-2.5 text-sm"
+                    href="/painel/palestrante/eventos/novo"
+                    className="bg-primary text-background font-bold px-6 py-3 rounded-full text-sm transition-all duration-300 hover:shadow-glow-md block text-center mb-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Painel Admin
+                    Criar Evento
                   </Link>
                 )}
-                {user.role === 'PALESTRANTE' && (
+
+                {/* Meus Eventos */}
+                {showMeusEventos && (
                   <Link
                     href="/painel/palestrante"
                     className="block text-placeholder hover:text-primary transition-colors font-medium py-2.5 text-sm"
@@ -134,7 +175,9 @@ export default function Navbar({ user }: NavbarProps) {
                     Meus Eventos
                   </Link>
                 )}
-                {user.role === 'PARTICIPANTE' && (
+
+                {/* Meus Ingressos */}
+                {showMeusIngressos && (
                   <Link
                     href="/meus-ingressos"
                     className="block text-placeholder hover:text-primary transition-colors font-medium py-2.5 text-sm"

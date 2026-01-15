@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import PushNotificationPrompt from '@/components/PushNotificationPrompt'
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://stageone.app'
 
@@ -43,15 +44,7 @@ export const metadata: Metadata = {
     description: 'Gestão completa de eventos e treinamentos presenciais.',
     images: ['/og-image.s.jpg'],
   },
-  icons: {
-    icon: [
-      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-      { url: '/favicon.ico', sizes: 'any' },
-    ],
-    shortcut: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
-  },
+  // Icons are automatically handled by Next.js from app/icon.svg and app/apple-icon.svg
 }
 
 export default function RootLayout({
@@ -63,6 +56,7 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className="antialiased">
         {children}
+        <PushNotificationPrompt />
       </body>
     </html>
   )
