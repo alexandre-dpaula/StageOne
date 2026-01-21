@@ -62,7 +62,7 @@ export default function Navbar({ user }: NavbarProps) {
                 {showCriarEvento && (
                   <Link
                     href="/painel/palestrante/eventos/novo"
-                    className="bg-primary text-background font-bold px-4 lg:px-5 py-1.5 lg:py-2 rounded-full text-xs lg:text-sm transition-all duration-300 hover:shadow-glow-md hover:scale-105"
+                    className="bg-primary text-background font-bold px-5 lg:px-6 py-2 lg:py-2.5 rounded-full text-sm lg:text-base transition-all duration-300 hover:shadow-glow-md hover:scale-105"
                   >
                     Criar Evento
                   </Link>
@@ -72,7 +72,7 @@ export default function Navbar({ user }: NavbarProps) {
                 {showMeusEventos && (
                   <Link
                     href="/painel/palestrante"
-                    className="text-placeholder hover:text-primary transition-colors font-medium text-sm lg:text-base"
+                    className="text-placeholder hover:text-primary transition-colors font-medium text-base lg:text-lg"
                   >
                     Meus Eventos
                   </Link>
@@ -82,7 +82,7 @@ export default function Navbar({ user }: NavbarProps) {
                 {showMeusIngressos && (
                   <Link
                     href="/meus-ingressos"
-                    className="text-placeholder hover:text-primary transition-colors font-medium text-sm lg:text-base"
+                    className="text-placeholder hover:text-primary transition-colors font-medium text-base lg:text-lg"
                   >
                     Meus Ingressos
                   </Link>
@@ -92,22 +92,22 @@ export default function Navbar({ user }: NavbarProps) {
                 {showDashboardCRM && (
                   <Link
                     href="/painel/crm"
-                    className="text-placeholder hover:text-primary transition-colors font-medium text-sm lg:text-base"
+                    className="text-placeholder hover:text-primary transition-colors font-medium text-base lg:text-lg"
                   >
                     Dashboard CRM
                   </Link>
                 )}
 
-                <div className="flex items-center gap-2 lg:gap-3 ml-2">
-                  <div className="w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0">
-                    <span className="text-primary text-xs font-bold">{user.name?.charAt(0).toUpperCase()}</span>
+                <div className="flex items-center gap-3 lg:gap-4 ml-2">
+                  <div className="w-9 h-9 lg:w-10 lg:h-10 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0">
+                    <span className="text-primary text-sm lg:text-base font-bold">{user.name?.charAt(0).toUpperCase()}</span>
                   </div>
-                  {/* Nome do usuário - 14px fixo */}
-                  <span className="text-foreground font-medium hidden lg:block max-w-[120px] truncate" style={{ fontSize: '14px' }}>{user.name}</span>
+                  {/* Nome do usuário */}
+                  <span className="text-foreground font-medium hidden lg:block max-w-[150px] truncate text-base">{user.name}</span>
                   <form action="/api/auth/logout" method="POST">
                     <button
                       type="submit"
-                      className="text-xs lg:text-sm text-placeholder hover:text-red-500 transition-colors font-medium whitespace-nowrap"
+                      className="text-sm lg:text-base text-placeholder hover:text-red-500 transition-colors font-medium whitespace-nowrap"
                     >
                       Sair
                     </button>
@@ -118,13 +118,13 @@ export default function Navbar({ user }: NavbarProps) {
               <>
                 <Link
                   href="/login"
-                  className="text-placeholder hover:text-primary transition-colors font-medium text-sm lg:text-base"
+                  className="text-placeholder hover:text-primary transition-colors font-medium text-base lg:text-lg"
                 >
                   Entrar
                 </Link>
                 <Link
                   href="/cadastro"
-                  className="bg-primary text-background font-bold px-4 lg:px-6 py-2 rounded-full text-sm lg:text-base transition-all duration-300 hover:shadow-glow-md hover:scale-105"
+                  className="bg-primary text-background font-bold px-5 lg:px-7 py-2 lg:py-2.5 rounded-full text-sm lg:text-base transition-all duration-300 hover:shadow-glow-md hover:scale-105"
                 >
                   Cadastrar
                 </Link>
