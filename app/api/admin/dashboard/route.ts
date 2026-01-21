@@ -120,8 +120,8 @@ export async function GET(request: NextRequest) {
       success: true,
       data: dashboardData,
       admin: {
-        name: adminData.full_name,
-        role: adminData.role
+        name: user.user_metadata?.name || user.email,
+        role: userData.role
       }
     })
 
