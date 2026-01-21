@@ -7,6 +7,7 @@ import { formatDateTime, formatCurrency } from '@/lib/utils'
 import QRCode from 'qrcode'
 import Link from 'next/link'
 import Image from 'next/image'
+import { Check, MapPin, Ticket } from 'lucide-react'
 
 export default function MeusIngressosPage() {
   const [tickets, setTickets] = useState<TicketWithEventAndType[]>([])
@@ -127,9 +128,9 @@ export default function MeusIngressosPage() {
                       }`}
                     >
                       {ticket.status === 'PAID'
-                        ? '✓ Pago'
+                        ? <><Check className="w-3 h-3 inline mr-1" /> Pago</>
                         : ticket.status === 'USED'
-                        ? '✓ Utilizado'
+                        ? <><Check className="w-3 h-3 inline mr-1" /> Utilizado</>
                         : ticket.status}
                     </span>
                   </div>
@@ -146,11 +147,15 @@ export default function MeusIngressosPage() {
                       <p className="text-foreground text-sm font-semibold">{formatDateTime(ticket.event.start_datetime)}</p>
                     </div>
                     <div>
-                      <p className="text-placeholder text-xs mb-1 font-medium">📍 Local</p>
+                      <p className="text-placeholder text-xs mb-1 font-medium flex items-center gap-1">
+                        <MapPin className="w-3 h-3" /> Local
+                      </p>
                       <p className="text-foreground text-sm font-semibold truncate">{ticket.event.location_name}</p>
                     </div>
                     <div className="col-span-2">
-                      <p className="text-placeholder text-xs mb-1 font-medium">🎫 Tipo de Ingresso</p>
+                      <p className="text-placeholder text-xs mb-1 font-medium flex items-center gap-1">
+                        <Ticket className="w-3 h-3" /> Tipo de Ingresso
+                      </p>
                       <p className="text-primary text-sm font-bold">{ticket.ticket_type.name}</p>
                     </div>
                   </div>
@@ -165,8 +170,8 @@ export default function MeusIngressosPage() {
 
                   {ticket.checked_in_at && (
                     <div className="mt-3 bg-green-500/10 border border-green-500/30 rounded-lg p-2">
-                      <p className="text-green-500 text-xs font-semibold text-center">
-                        ✓ Check-in: {formatDateTime(ticket.checked_in_at)}
+                      <p className="text-green-500 text-xs font-semibold text-center flex items-center justify-center gap-1">
+                        <Check className="w-3 h-3" /> Check-in: {formatDateTime(ticket.checked_in_at)}
                       </p>
                     </div>
                   )}
@@ -213,8 +218,8 @@ export default function MeusIngressosPage() {
 
               {selectedTicket.checked_in_at && (
                 <div className="mt-4 bg-green-100 border border-green-500 rounded-lg p-3">
-                  <p className="text-green-700 text-sm text-center font-semibold">
-                    ✓ Check-in realizado
+                  <p className="text-green-700 text-sm text-center font-semibold flex items-center justify-center gap-1">
+                    <Check className="w-4 h-4" /> Check-in realizado
                   </p>
                   <p className="text-green-600 text-xs text-center mt-1">
                     {formatDateTime(selectedTicket.checked_in_at)}

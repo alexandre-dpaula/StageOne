@@ -116,9 +116,19 @@ export default function CuponsPage() {
           </div>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="btn-primary px-6 py-3"
+            className={showForm ? "glass border border-red-500/50 hover:bg-red-500/10 text-red-500 px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105 text-sm font-medium flex items-center gap-2" : "glass border border-primary/50 hover:bg-primary/10 text-primary px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105 text-sm font-medium flex items-center gap-2"}
           >
-            {showForm ? 'Cancelar' : '+ Novo Cupom'}
+            {showForm ? (
+              <>
+                <span className="text-lg">×</span>
+                <span>Cancelar</span>
+              </>
+            ) : (
+              <>
+                <span className="text-lg">+</span>
+                <span>Cupom</span>
+              </>
+            )}
           </button>
         </div>
 

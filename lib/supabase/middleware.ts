@@ -51,11 +51,15 @@ export async function updateSession(request: NextRequest) {
   }
 
   // Redirect authenticated users away from auth pages
+  // EXCETO /redefinir-senha que precisa do token de recuperação para funcionar
   if (user && (pathname === '/login' || pathname === '/cadastro')) {
     const url = request.nextUrl.clone()
     url.pathname = '/'
     return NextResponse.redirect(url)
   }
+
+  // Permitir acesso a /redefinir-senha mesmo com usuário autenticado
+  // Esta rota precisa validar o token de recuperação do Supabase
 
   return supabaseResponse
 }

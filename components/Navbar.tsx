@@ -7,6 +7,7 @@ import { User } from '@/types/database.types'
 type NavbarUser = User & {
   hasTickets?: boolean
   hasEvents?: boolean // Novo: indica se o usuário tem eventos criados
+  isSuperAdmin?: boolean // Indica se o usuário é um super admin
 }
 
 interface NavbarProps {
@@ -20,9 +21,11 @@ export default function Navbar({ user }: NavbarProps) {
   // - Usuário SEM eventos: Mostra "Criar Evento" (CTA) + "Meus Ingressos"
   // - Usuário COM eventos: Mostra "Meus Eventos" + "Meus Ingressos"
   // - ADMIN: Mostra "Meus Eventos" (acesso total) + "Meus Ingressos"
+  // - SUPER ADMIN: Mostra "Dashboard CRM" adicional
 
   const isAdmin = user?.role === 'ADMIN'
   const hasEvents = user?.hasEvents ?? false
+  const isSuperAdmin = user?.isSuperAdmin ?? false
 
   // Determina o que mostrar na navbar baseado em AÇÕES, não em roles
   // Se o usuário NUNCA criou eventos → Mostra CTA "Criar Evento"
@@ -31,6 +34,7 @@ export default function Navbar({ user }: NavbarProps) {
   const showCriarEvento = !!user && !isAdmin && !hasEvents
   const showMeusEventos = !!user && (isAdmin || hasEvents)
   const showMeusIngressos = !!user // Sempre visível
+  const showDashboardCRM = isSuperAdmin // Apenas para super admin
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-border/30">
@@ -81,6 +85,16 @@ export default function Navbar({ user }: NavbarProps) {
                     className="text-placeholder hover:text-primary transition-colors font-medium text-sm lg:text-base"
                   >
                     Meus Ingressos
+                  </Link>
+                )}
+
+                {/* Dashboard CRM (apenas para super admin) */}
+                {showDashboardCRM && (
+                  <Link
+                    href="/painel/crm"
+                    className="text-placeholder hover:text-primary transition-colors font-medium text-sm lg:text-base"
+                  >
+                    Dashboard CRM
                   </Link>
                 )}
 
@@ -184,6 +198,17 @@ export default function Navbar({ user }: NavbarProps) {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Meus Ingressos
+                  </Link>
+                )}
+
+                {/* Dashboard CRM (apenas para super admin - Mobile) */}
+                {showDashboardCRM && (
+                  <Link
+                    href="/painel/crm"
+                    className="block text-placeholder hover:text-primary transition-colors font-medium py-2.5 text-sm"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Dashboard CRM
                   </Link>
                 )}
 

@@ -116,14 +116,14 @@ export default function EventEditForm({ event, backUrl }: EventEditFormProps) {
   )
 
   const categories = [
-    'TECNOLOGIA',
-    'LIDERANÇA',
-    'VENDAS',
     'MARKETING',
+    'VENDAS',
     'GESTÃO',
-    'DESENVOLVIMENTO PESSOAL',
-    'SAÚDE',
+    'LIDERANÇA',
     'EDUCAÇÃO',
+    'DESENVOLVIMENTO DE PESSOAS',
+    'TECNOLOGIA',
+    'SAÚDE',
   ]
 
   const addModule = () => {
@@ -549,9 +549,10 @@ export default function EventEditForm({ event, backUrl }: EventEditFormProps) {
             <button
               type="button"
               onClick={addModule}
-              className="btn-primary text-sm"
+              className="glass border border-primary/50 hover:bg-primary/10 text-primary px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105 text-sm font-medium flex items-center gap-2"
             >
-              + Adicionar Módulo
+              <span className="text-lg">+</span>
+              <span>Módulo</span>
             </button>
           </div>
 
@@ -615,9 +616,10 @@ export default function EventEditForm({ event, backUrl }: EventEditFormProps) {
             <button
               type="button"
               onClick={addTicketType}
-              className="btn-primary text-sm"
+              className="glass border border-primary/50 hover:bg-primary/10 text-primary px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105 text-sm font-medium flex items-center gap-2"
             >
-              + Adicionar Sessão
+              <span className="text-lg">+</span>
+              <span>Sessão</span>
             </button>
           </div>
 

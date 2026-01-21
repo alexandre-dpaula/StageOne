@@ -31,11 +31,13 @@ export function generateTicketConfirmationEmail(data: TicketEmailData): string {
 
           <!-- Header com Gradiente -->
           <tr>
-            <td style="background: linear-gradient(135deg, #C4F82A 0%, #9FD122 100%); padding: 40px 32px; text-align: center;">
-              <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #0A0B0D; letter-spacing: -0.5px;">
-                <span style="font-weight: 300;">Stage</span><span style="font-weight: 700;">One</span><sup style="font-size: 14px; vertical-align: top; position: relative; top: 0.15em; font-weight: 400;">™</sup>
-              </h1>
-              <p style="margin: 8px 0 0; font-size: 14px; font-weight: 600; color: #0A0B0D; text-transform: uppercase; letter-spacing: 2px;">
+            <td style="background: linear-gradient(135deg, #C4F82A 0%, #9FD122 100%); padding: 48px 32px; text-align: center;">
+              <div style="margin-bottom: 12px;">
+                <h1 style="margin: 0; font-size: 36px; font-weight: 700; color: #0A0B0D; letter-spacing: -1px; line-height: 1;">
+                  <span style="font-weight: 300; color: #2D2D2D;">Stage</span><span style="font-weight: 700; color: #0A0B0D;">One</span><sup style="font-size: 16px; vertical-align: top; position: relative; top: -0.5em; font-weight: 400; color: #2D2D2D;">™</sup>
+                </h1>
+              </div>
+              <p style="margin: 0; font-size: 11px; font-weight: 700; color: #0A0B0D; text-transform: uppercase; letter-spacing: 3px; opacity: 0.8;">
                 Plataforma de Eventos
               </p>
             </td>
@@ -47,23 +49,32 @@ export function generateTicketConfirmationEmail(data: TicketEmailData): string {
 
               <!-- Mensagem de Confirmação -->
               <div style="text-align: center; margin-bottom: 40px;">
-                <div style="display: inline-block; background: rgba(196, 248, 42, 0.1); border: 1px solid rgba(196, 248, 42, 0.3); border-radius: 12px; padding: 12px 24px; margin-bottom: 16px;">
-                  <span style="font-size: 24px; margin-right: 8px;">✓</span>
-                  <span style="color: #C4F82A; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Inscrição Confirmada</span>
+                <!-- Badge de Confirmação Melhorado -->
+                <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(196, 248, 42, 0.15); border: 2px solid rgba(196, 248, 42, 0.4); border-radius: 16px; padding: 14px 28px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(196, 248, 42, 0.2);">
+                  <svg style="width: 20px; height: 20px; color: #C4F82A;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  <span style="color: #C4F82A; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px;">Inscrição Confirmada</span>
                 </div>
-                <h2 style="margin: 0; font-size: 24px; font-weight: 700; color: #ffffff; line-height: 1.3;">
+
+                <h2 style="margin: 0 0 12px 0; font-size: 28px; font-weight: 700; color: #ffffff; line-height: 1.2;">
                   Olá, ${data.participantName}!
                 </h2>
-                <p style="margin: 16px 0 0; font-size: 16px; color: #9CA3AF; line-height: 1.6;">
+                <p style="margin: 0; font-size: 16px; color: #9CA3AF; line-height: 1.6; max-width: 400px; margin-left: auto; margin-right: auto;">
                   Sua inscrição foi confirmada com sucesso. Estamos animados para te ver no evento!
                 </p>
               </div>
 
               <!-- Detalhes do Evento -->
-              <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 32px; margin-bottom: 32px;">
-                <h3 style="margin: 0 0 24px; font-size: 20px; font-weight: 700; color: #ffffff;">
-                  Detalhes do Evento
-                </h3>
+              <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 36px; margin-bottom: 32px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                  <svg style="width: 24px; height: 24px; color: #C4F82A; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
+                  </svg>
+                  <h3 style="margin: 0; font-size: 20px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px;">
+                    Detalhes do Evento
+                  </h3>
+                </div>
 
                 <!-- Título do Evento -->
                 <div style="margin-bottom: 24px;">
@@ -137,25 +148,47 @@ export function generateTicketConfirmationEmail(data: TicketEmailData): string {
               </div>
 
               <!-- QR Code -->
-              <div style="background: #ffffff; border-radius: 16px; padding: 32px; text-align: center; margin-bottom: 32px;">
-                <p style="margin: 0 0 16px; font-size: 14px; color: #374151; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
-                  Seu QR Code de Acesso
-                </p>
-                <img src="${data.qrCodeUrl}" alt="QR Code" style="max-width: 200px; width: 100%; height: auto; margin: 0 auto 16px; display: block; border-radius: 8px;" />
-                <p style="margin: 0; font-size: 12px; color: #6B7280;">
-                  ID: ${data.ticketId}
-                </p>
-                <p style="margin: 8px 0 0; font-size: 12px; color: #9CA3AF; line-height: 1.5;">
-                  Apresente este QR Code na entrada do evento
+              <div style="background: #ffffff; border-radius: 20px; padding: 40px 32px; text-align: center; margin-bottom: 32px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);">
+                <!-- Título com ícone -->
+                <div style="display: inline-flex; align-items: center; gap: 8px; background: #F3F4F6; border-radius: 12px; padding: 10px 20px; margin-bottom: 24px;">
+                  <svg style="width: 18px; height: 18px; color: #0A0B0D;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+                  </svg>
+                  <span style="color: #0A0B0D; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 1.2px;">Seu QR Code de Acesso</span>
+                </div>
+
+                <!-- QR Code com moldura -->
+                <div style="background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%); border: 3px solid #E5E7EB; border-radius: 16px; padding: 20px; display: inline-block; margin-bottom: 20px;">
+                  <img src="${data.qrCodeUrl}" alt="QR Code" style="max-width: 200px; width: 100%; height: auto; display: block; border-radius: 8px;" />
+                </div>
+
+                <!-- ID do Ticket -->
+                <div style="background: #F3F4F6; border-radius: 10px; padding: 12px 20px; margin-bottom: 16px; display: inline-block;">
+                  <p style="margin: 0; font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">
+                    ID do Ingresso
+                  </p>
+                  <p style="margin: 0; font-size: 14px; color: #0A0B0D; font-weight: 700; font-family: 'Courier New', monospace; letter-spacing: 1px;">
+                    ${data.ticketId}
+                  </p>
+                </div>
+
+                <!-- Instruções -->
+                <p style="margin: 0; font-size: 13px; color: #6B7280; line-height: 1.6; max-width: 280px; margin-left: auto; margin-right: auto;">
+                  Apresente este QR Code na entrada do evento para validar seu ingresso
                 </p>
               </div>
 
               <!-- Informações Importantes -->
-              <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 32px;">
-                <p style="margin: 0 0 8px; font-size: 14px; color: #60A5FA; font-weight: 600;">
-                  ℹ️ Informações Importantes
-                </p>
-                <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #9CA3AF; line-height: 1.8;">
+              <div style="background: rgba(196, 248, 42, 0.08); border: 1px solid rgba(196, 248, 42, 0.25); border-radius: 14px; padding: 24px; margin-bottom: 32px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                  <svg style="width: 20px; height: 20px; color: #C4F82A; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <p style="margin: 0; font-size: 14px; color: #C4F82A; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                    Informações Importantes
+                  </p>
+                </div>
+                <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #D1D5DB; line-height: 1.9;">
                   <li>Chegue com 15 minutos de antecedência</li>
                   <li>Traga um documento com foto para identificação</li>
                   <li>Este ingresso é pessoal e intransferível</li>
@@ -165,9 +198,15 @@ export function generateTicketConfirmationEmail(data: TicketEmailData): string {
 
               <!-- Botão CTA -->
               <div style="text-align: center;">
-                <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://stage-one-1.vercel.app'}/meus-ingressos" style="display: inline-block; background: linear-gradient(135deg, #C4F82A 0%, #9FD122 100%); color: #0A0B0D; text-decoration: none; padding: 16px 48px; border-radius: 12px; font-weight: 700; font-size: 16px; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(196, 248, 42, 0.3); transition: all 0.3s;">
-                  Ver Meus Ingressos
+                <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://stage-one-1.vercel.app'}/meus-ingressos" style="display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #C4F82A 0%, #9FD122 100%); color: #0A0B0D; text-decoration: none; padding: 18px 40px; border-radius: 14px; font-weight: 700; font-size: 16px; letter-spacing: 0.3px; box-shadow: 0 6px 20px rgba(196, 248, 42, 0.35);">
+                  <span>Ver Meus Ingressos</span>
+                  <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                  </svg>
                 </a>
+                <p style="margin: 16px 0 0; font-size: 12px; color: #6B7280;">
+                  Acesse sua conta para gerenciar seus ingressos
+                </p>
               </div>
 
             </td>

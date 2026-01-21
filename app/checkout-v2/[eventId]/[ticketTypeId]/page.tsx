@@ -9,6 +9,8 @@ import { Event, TicketType } from '@/types/database.types'
 import { formatCurrency, formatDateTime } from '@/lib/utils'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
+import SessionSelector from '@/components/SessionSelector'
+import { Check } from 'lucide-react'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
@@ -104,6 +106,7 @@ export default function CheckoutV2Page({
     customer_cpf: '',
     customer_phone: '',
   })
+  const [selectedSessionId, setSelectedSessionId] = useState<string | undefined>()
 
   useEffect(() => {
     loadData()
@@ -152,6 +155,13 @@ export default function CheckoutV2Page({
   async function handleContinueToPayment(e: React.FormEvent) {
     e.preventDefault()
     setError('')
+
+    // Validate session selection if event has sessions enabled
+    if (event?.enable_sessions && !selectedSessionId) {
+      setError('Por favor, selecione uma sessão')
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -180,6 +190,7 @@ export default function CheckoutV2Page({
           customer_phone: formData.customer_phone,
           payment_method: 'CARD', // Stripe decide automaticamente
           quantity: 1,
+          sessionId: selectedSessionId, // Include selected session
         }),
       })
 
@@ -242,7 +253,7 @@ export default function CheckoutV2Page({
           <div className="flex items-center justify-center gap-4">
             <div className={`flex items-center gap-2 ${step === 'info' ? 'text-primary' : step === 'payment' || step === 'processing' ? 'text-green-500' : 'text-placeholder'}`}>
               <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${step === 'info' ? 'border-primary bg-primary/10' : step === 'payment' || step === 'processing' ? 'border-green-500 bg-green-500/10' : 'border-border'}`}>
-                {step === 'payment' || step === 'processing' ? '✓' : '1'}
+                {step === 'payment' || step === 'processing' ? <Check className="w-4 h-4" /> : '1'}
               </div>
               <span className="text-sm font-medium">Seus Dados</span>
             </div>
@@ -251,7 +262,7 @@ export default function CheckoutV2Page({
 
             <div className={`flex items-center gap-2 ${step === 'payment' ? 'text-primary' : step === 'processing' ? 'text-green-500' : 'text-placeholder'}`}>
               <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${step === 'payment' ? 'border-primary bg-primary/10' : step === 'processing' ? 'border-green-500 bg-green-500/10' : 'border-border'}`}>
-                {step === 'processing' ? '✓' : '2'}
+                {step === 'processing' ? <Check className="w-4 h-4" /> : '2'}
               </div>
               <span className="text-sm font-medium">Pagamento</span>
             </div>
@@ -275,10 +286,21 @@ export default function CheckoutV2Page({
                 <>
                   <h2 className="text-2xl font-bold text-foreground mb-6">Seus Dados</h2>
 
-                  <form onSubmit={handleContinueToPayment} className="space-y-4">
+                  <form onSubmit={handleContinueToPayment} className="space-y-6">
                     {error && (
                       <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded-lg text-sm">
                         {error}
+                      </div>
+                    )}
+
+                    {/* Session Selector - Only show if event has sessions enabled */}
+                    {event.enable_sessions && (
+                      <div className="pb-6 border-b border-border">
+                        <SessionSelector
+                          eventId={params.eventId}
+                          onSelectSession={setSelectedSessionId}
+                          selectedSessionId={selectedSessionId}
+                        />
                       </div>
                     )}
 

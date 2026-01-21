@@ -55,10 +55,10 @@ export default async function HomePage() {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-8 py-12 sm:py-16 md:py-20 w-full">
-          <div className="text-center mb-8 sm:mb-10 md:mb-12 animate-fade-in">
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8 w-full">
+          <div className="text-center mb-3 sm:mb-4 md:mb-6 animate-fade-in">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-3 sm:px-4 py-1.5 sm:py-2 mb-4 sm:mb-6">
+            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-3 sm:px-4 py-1.5 sm:py-2 mb-3 sm:mb-4">
               <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
               </svg>
@@ -68,12 +68,12 @@ export default async function HomePage() {
             </div>
 
             {/* Heading */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground mb-4 sm:mb-6 leading-tight px-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground mb-3 sm:mb-4 leading-tight px-4">
               Bem-vindo ao
               <span className="text-primary text-glow"> <span className="font-normal">Stage</span><span className="font-bold">One</span><sup className="text-[0.5em] top-[-0.3em] relative ml-1">™</sup></span>
             </h1>
 
-            <p className="text-base sm:text-lg md:text-xl text-placeholder mb-8 sm:mb-10 md:mb-12 max-w-3xl mx-auto px-4">
+            <p className="text-base sm:text-lg md:text-xl text-placeholder mb-4 sm:mb-6 md:mb-8 max-w-3xl mx-auto px-4">
               Encontre e participe dos melhores eventos e treinamentos presenciais
             </p>
           </div>
@@ -86,7 +86,7 @@ export default async function HomePage() {
       </section>
 
       {/* Events Carousels */}
-      <section id="eventos" className="pt-8 pb-20">
+      <section id="eventos" className="pt-0 pb-12">
         {/* Últimos Eventos Cadastrados */}
         {recentEvents.length > 0 && (
           <EventCarousel title="Últimos Eventos Cadastrados" events={recentEvents} />
@@ -132,7 +132,7 @@ export default async function HomePage() {
       {/* Footer */}
       <footer className="bg-card border-t border-card py-8">
         <div className="max-w-7xl mx-auto px-4 text-center text-placeholder">
-          <p>&copy; 2025 <span className="font-normal">Stage</span><span className="font-bold">One</span>™. Todos os direitos reservados.</p>
+          <p>&copy; 2025 <span className="font-normal">Stage</span><span className="font-bold">One</span>™<br />Todos os direitos reservados.</p>
         </div>
       </footer>
     </div>

@@ -11,6 +11,10 @@ export type TicketStatus = 'PENDING_PAYMENT' | 'PAID' | 'CANCELLED' | 'USED';
 export type PaymentStatus = 'PENDING' | 'PAID' | 'CANCELLED' | 'REFUNDED';
 export type BookingStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
 export type DiscountType = 'PERCENTAGE' | 'FIXED_AMOUNT';
+export type SessionStatus = 'AVAILABLE' | 'FULL' | 'CANCELLED';
+export type EventStatus = 'DRAFT' | 'PENDING_APPROVAL' | 'APPROVED' | 'PUBLISHED' | 'CANCELLED' | 'COMPLETED';
+export type StripeAccountStatus = 'NOT_CONNECTED' | 'PENDING' | 'ACTIVE' | 'RESTRICTED';
+export type WithdrawalStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED' | 'CANCELLED';
 
 // ============================================================================
 // USER
@@ -22,6 +26,16 @@ export interface User {
   role: UserRole;
   avatar_url?: string | null;
   phone?: string | null;
+
+  // Stripe Connect
+  stripe_account_id?: string | null;
+  stripe_account_status?: StripeAccountStatus;
+  stripe_onboarding_completed?: boolean;
+  stripe_charges_enabled?: boolean;
+  stripe_payouts_enabled?: boolean;
+  stripe_onboarding_url?: string | null;
+  stripe_connected_at?: string | null;
+
   created_at: string;
   updated_at: string;
 }
@@ -57,6 +71,29 @@ export interface Event {
   // Media
   banner_url?: string | null;
   cover_image?: string | null;
+
+  // Sessions
+  enable_sessions?: boolean;
+  session_capacity?: number;
+  available_session_dates?: string[];
+
+  // Marketplace - Status e aprovação
+  status?: EventStatus;
+  approved_at?: string | null;
+  approved_by?: string | null;
+  rejection_reason?: string | null;
+
+  // Marketplace - Custos
+  event_duration_hours?: number;
+  room_price?: number;
+  has_audiovisual?: boolean;
+  audiovisual_price?: number;
+  has_coffee_break?: boolean;
+  coffee_break_price?: number;
+  has_coverage?: boolean;
+  coverage_price?: number;
+  total_service_cost?: number;
+  platform_fee_percentage?: number;
 
   // Meta
   created_by: string;
@@ -541,4 +578,142 @@ export interface EventReport {
     checked_in: boolean;
     checkin_date?: string | null;
   }>;
+}
+
+// ============================================================================
+// SESSÕES DE EVENTOS
+// ============================================================================
+export interface EventSession {
+  id: string;
+  event_id: string;
+  session_number: number;
+  session_date: string;
+  max_capacity: number;
+  current_bookings: number;
+  status: SessionStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface EventSessionWithEvent extends EventSession {
+  event: Event;
+}
+
+export interface EventWithSessions extends Event {
+  sessions: EventSession[];
+}
+
+// ============================================================================
+// MARKETPLACE - FINANCEIRO
+// ============================================================================
+export interface EventFinancials {
+  id: string;
+  event_id: string;
+  user_id: string;
+
+  // Receitas
+  total_ticket_sales: number;
+  tickets_sold_count: number;
+
+  // Custos fixos
+  room_cost: number;
+  audiovisual_cost: number;
+  coffee_break_cost: number;
+  coverage_cost: number;
+
+  // Custos variáveis
+  platform_fee: number; // 3%
+  stripe_processing_fees: number; // ~3.99% + R$0.39
+
+  total_costs: number;
+
+  // Saldos
+  gross_amount: number; // Bruto
+  net_amount: number; // Líquido
+  withdrawn_amount: number; // Sacado
+  available_balance: number; // Disponível
+
+  // Saque
+  can_withdraw: boolean;
+  withdrawal_available_at?: string | null;
+
+  last_calculated_at: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface EventFinancialsWithEvent extends EventFinancials {
+  event: Event;
+}
+
+// ============================================================================
+// MARKETPLACE - SAQUES
+// ============================================================================
+export interface Withdrawal {
+  id: string;
+  event_id: string;
+  user_id: string;
+
+  amount: number;
+
+  // Stripe Connect
+  stripe_transfer_id?: string | null;
+  stripe_account_id: string;
+
+  // Status
+  status: WithdrawalStatus;
+  failure_code?: string | null;
+  failure_message?: string | null;
+
+  // Timestamps
+  requested_at: string;
+  processing_started_at?: string | null;
+  completed_at?: string | null;
+  failed_at?: string | null;
+
+  notes?: string | null;
+  created_at: string;
+}
+
+export interface WithdrawalWithEvent extends Withdrawal {
+  event: Event;
+}
+
+export interface WithdrawalWithEventAndUser extends Withdrawal {
+  event: Event;
+  user: User;
+}
+
+// ============================================================================
+// MARKETPLACE - CÁLCULO DE CUSTOS
+// ============================================================================
+export interface EventCostCalculation {
+  room_price: number;
+  audiovisual_price: number;
+  coffee_break_price: number;
+  coverage_price: number;
+  total_service_cost: number;
+}
+
+export interface CalculateCostRequest {
+  duration_hours: number;
+  has_audiovisual?: boolean;
+  has_coffee_break?: boolean;
+  has_coverage?: boolean;
+}
+
+// ============================================================================
+// MARKETPLACE - VIEWS
+// ============================================================================
+export interface CreatorFinancialSummary {
+  user_id: string;
+  creator_name: string;
+  creator_email: string;
+  total_events: number;
+  active_events: number;
+  total_revenue: number;
+  total_costs: number;
+  total_net: number;
+  total_withdrawn: number;
+  total_available: number;
 }
