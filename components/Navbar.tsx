@@ -25,7 +25,7 @@ export default function Navbar({ user }: NavbarProps) {
 
   const isAdmin = user?.role === 'ADMIN'
   const hasEvents = user?.hasEvents ?? false
-  const isSuperAdmin = user?.isSuperAdmin ?? false
+  const isSuperAdmin = user?.isSuperAdmin ?? isAdmin // Se não tiver isSuperAdmin definido, usa isAdmin
 
   // Determina o que mostrar na navbar baseado em AÇÕES, não em roles
   // Se o usuário NUNCA criou eventos → Mostra CTA "Criar Evento"
@@ -34,7 +34,7 @@ export default function Navbar({ user }: NavbarProps) {
   const showCriarEvento = !!user && !isAdmin && !hasEvents
   const showMeusEventos = !!user && (isAdmin || hasEvents)
   const showMeusIngressos = !!user // Sempre visível
-  const showDashboardCRM = isSuperAdmin // Apenas para super admin
+  const showDashboardCRM = isAdmin // Todos os ADMINs veem o CRM
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-border/30">
