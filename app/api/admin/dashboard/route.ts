@@ -11,15 +11,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     }
 
-    // Verificar se o usuário é admin
-    const { data: adminData, error: adminError } = await supabase
-      .from('admins')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('is_active', true)
+    // Verificar se o usuário é admin (pela coluna role na tabela users)
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user.id)
       .single()
 
-    if (adminError || !adminData) {
+    if (userError || !userData || userData.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Acesso negado - Admin apenas' }, { status: 403 })
     }
 
