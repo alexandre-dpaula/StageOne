@@ -79,14 +79,7 @@ export async function POST(request: NextRequest) {
         console.error('Error sending confirmation email:', emailError)
       }
 
-    } else if (paymentIntent.status === 'canceled') {
-      newStatus = 'CANCELED'
-      await supabase
-        .from('bookings')
-        .update({ payment_status: 'CANCELED' })
-        .eq('id', bookingId)
-
-    } else if (paymentIntent.status === 'payment_failed') {
+    } else if ((paymentIntent as any).status === 'canceled' || (paymentIntent as any).status === 'payment_failed') {
       newStatus = 'FAILED'
       await supabase
         .from('bookings')

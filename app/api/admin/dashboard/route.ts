@@ -214,8 +214,8 @@ async function calculateGrowthRates(supabase: any) {
     .gte('created_at', lastMonth.toISOString())
     .lt('created_at', new Date(now.getFullYear(), now.getMonth(), 1).toISOString())
 
-  const currentRevenue = currentMonthData?.reduce((sum, b) => sum + parseFloat(b.total_price || 0), 0) || 0
-  const lastRevenue = lastMonthData?.reduce((sum, b) => sum + parseFloat(b.total_price || 0), 0) || 0
+  const currentRevenue = currentMonthData?.reduce((sum: number, b: any) => sum + parseFloat(b.total_price || 0), 0) || 0
+  const lastRevenue = lastMonthData?.reduce((sum: number, b: any) => sum + parseFloat(b.total_price || 0), 0) || 0
 
   const revenueGrowth = lastRevenue > 0
     ? ((currentRevenue - lastRevenue) / lastRevenue) * 100
