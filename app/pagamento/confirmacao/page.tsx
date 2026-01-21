@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Button from '@/components/ui/Button'
 
-export default function PaymentConfirmationPage() {
+function PaymentConfirmationContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const bookingId = searchParams.get('booking_id')
@@ -93,5 +93,21 @@ export default function PaymentConfirmationPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function PaymentConfirmationPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-card rounded-lg p-8 text-center">
+          <div className="text-4xl mb-4">⏳</div>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Carregando...</h1>
+          <p className="text-placeholder">Aguarde um momento...</p>
+        </div>
+      </div>
+    }>
+      <PaymentConfirmationContent />
+    </Suspense>
   )
 }
