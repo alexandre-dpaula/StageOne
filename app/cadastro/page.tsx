@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
+import { Ticket } from 'lucide-react'
 
 export default function CadastroPage() {
   return (
@@ -109,7 +110,10 @@ function CadastroContent() {
         <div className="bg-card rounded-lg p-8">
           {redirectUrl && (
             <div className="mb-6 bg-primary/10 border border-primary/30 text-foreground px-4 py-3 rounded-lg text-sm">
-              <p className="font-medium mb-1">🎫 Para continuar sua compra</p>
+              <p className="font-medium mb-1 flex items-center gap-2">
+                <Ticket className="w-4 h-4 text-primary" />
+                Para continuar sua compra
+              </p>
               <p className="text-placeholder text-xs">
                 Crie sua conta para finalizar a compra do seu ingresso
               </p>

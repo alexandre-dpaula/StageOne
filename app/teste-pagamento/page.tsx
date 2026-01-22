@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { CreditCard, CheckCircle2, AlertTriangle } from 'lucide-react'
 
 export default function TestePagamentoPage() {
   const [loading, setLoading] = useState(false)
@@ -94,8 +95,9 @@ export default function TestePagamentoPage() {
   return (
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-foreground mb-8">
-          💳 Pagamento Asaas - Modo Produção
+        <h1 className="text-3xl font-bold text-foreground mb-8 flex items-center gap-3">
+          <CreditCard className="w-8 h-8 text-primary" />
+          Pagamento Asaas - Modo Produção
         </h1>
 
         <div className="glass rounded-2xl p-8 mb-8">
@@ -211,8 +213,9 @@ export default function TestePagamentoPage() {
 
         {result && (
           <div className="glass rounded-2xl p-6 mb-8 border-2 border-primary">
-            <h2 className="text-xl font-bold text-primary mb-4">
-              ✅ Pagamento Criado com Sucesso!
+            <h2 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
+              <CheckCircle2 className="w-6 h-6" />
+              Pagamento Criado com Sucesso!
             </h2>
 
             <div className="space-y-4">
@@ -312,7 +315,10 @@ export default function TestePagamentoPage() {
             <li>Configure o webhook em: https://www.asaas.com/config/webhook</li>
             <li>URL do webhook: https://stage-one-1.vercel.app/api/payments/asaas/webhook</li>
             <li>Preencha o formulário acima com dados reais para criar pagamento</li>
-            <li>⚠️ ATENÇÃO: Este é um pagamento REAL, será cobrado!</li>
+            <li className="flex items-center gap-2 text-yellow-500 font-bold">
+              <AlertTriangle className="w-5 h-5" />
+              ATENÇÃO: Este é um pagamento REAL, será cobrado!
+            </li>
           </ol>
         </div>
       </div>

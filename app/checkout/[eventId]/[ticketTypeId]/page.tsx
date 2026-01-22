@@ -7,6 +7,7 @@ import { Event, TicketType } from '@/types/database.types'
 import { formatCurrency, formatDateTime } from '@/lib/utils'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
+import { CreditCard } from 'lucide-react'
 
 type PaymentMethod = 'PIX' | 'CREDIT_CARD'
 
@@ -218,7 +219,9 @@ export default function CheckoutPage({ params }: { params: { eventId: string; ti
                         : 'border-border hover:border-primary/50'
                     }`}
                   >
-                    <div className="text-2xl mb-2">💳</div>
+                    <div className="mb-2">
+                      <CreditCard className="w-8 h-8 mx-auto text-primary" />
+                    </div>
                     <div className="font-semibold text-foreground">Cartão</div>
                     <div className="text-xs text-placeholder mt-1">Crédito ou débito</div>
                   </button>

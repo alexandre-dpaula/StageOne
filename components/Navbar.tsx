@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { User as UserIcon } from 'lucide-react'
 import { User } from '@/types/database.types'
 
 type NavbarUser = User & {
@@ -98,12 +99,24 @@ export default function Navbar({ user }: NavbarProps) {
                   </Link>
                 )}
 
-                <div className="flex items-center gap-3 lg:gap-4 ml-2">
-                  <div className="w-9 h-9 lg:w-10 lg:h-10 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0">
-                    <span className="text-primary text-sm lg:text-base font-bold">{user.name?.charAt(0).toUpperCase()}</span>
+                <div className="flex items-center gap-3 lg:gap-6 ml-2">
+                  {/* Greeting with Avatar */}
+                  <div className="flex items-center gap-2.5">
+                    <Link
+                      href="/perfil"
+                      className="relative flex-shrink-0 group"
+                      title="Editar Perfil"
+                    >
+                      <div className="w-9 h-9 lg:w-10 lg:h-10 rounded-full bg-primary/10 border-2 border-primary/30 flex items-center justify-center group-hover:bg-primary/20 group-hover:border-primary/50 transition-all">
+                        <UserIcon className="w-4 h-4 lg:w-5 lg:h-5 text-primary" />
+                      </div>
+                    </Link>
+                    <p className="hidden lg:block text-base text-foreground font-medium">
+                      Olá, <span className="text-primary font-bold">{user.name}</span>
+                    </p>
                   </div>
-                  {/* Nome do usuário */}
-                  <span className="text-foreground font-medium hidden lg:block max-w-[150px] truncate text-base">{user.name}</span>
+
+                  {/* Logout Button */}
                   <form action="/api/auth/logout" method="POST">
                     <button
                       type="submit"

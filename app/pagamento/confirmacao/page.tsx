@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Button from '@/components/ui/Button'
+import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react'
 
 function PaymentConfirmationContent() {
   const router = useRouter()
@@ -56,7 +57,9 @@ function PaymentConfirmationContent() {
       <div className="max-w-md w-full bg-card rounded-lg p-8 text-center">
         {status === 'loading' && (
           <>
-            <div className="text-4xl mb-4">⏳</div>
+            <div className="mb-4 flex justify-center">
+              <Loader2 className="w-16 h-16 text-primary animate-spin" />
+            </div>
             <h1 className="text-2xl font-bold text-foreground mb-2">Verificando Pagamento</h1>
             <p className="text-placeholder">Aguarde um momento...</p>
           </>
@@ -64,7 +67,9 @@ function PaymentConfirmationContent() {
 
         {status === 'success' && (
           <>
-            <div className="text-6xl mb-4">✓</div>
+            <div className="mb-4 flex justify-center">
+              <CheckCircle2 className="w-20 h-20 text-green-500" />
+            </div>
             <h1 className="text-2xl font-bold text-foreground mb-2">Pagamento Confirmado!</h1>
             <p className="text-placeholder mb-6">{message}</p>
             <p className="text-sm text-placeholder mb-6">
@@ -78,7 +83,9 @@ function PaymentConfirmationContent() {
 
         {status === 'error' && (
           <>
-            <div className="text-6xl mb-4">⚠️</div>
+            <div className="mb-4 flex justify-center">
+              <AlertCircle className="w-20 h-20 text-yellow-500" />
+            </div>
             <h1 className="text-2xl font-bold text-foreground mb-2">Atenção</h1>
             <p className="text-placeholder mb-6">{message}</p>
             <div className="space-y-3">
@@ -101,7 +108,9 @@ export default function PaymentConfirmationPage() {
     <Suspense fallback={
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-card rounded-lg p-8 text-center">
-          <div className="text-4xl mb-4">⏳</div>
+          <div className="mb-4 flex justify-center">
+            <Loader2 className="w-16 h-16 text-primary animate-spin" />
+          </div>
           <h1 className="text-2xl font-bold text-foreground mb-2">Carregando...</h1>
           <p className="text-placeholder">Aguarde um momento...</p>
         </div>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { usePushNotifications } from '@/hooks/usePushNotifications'
-import { X } from 'lucide-react'
+import { X, Bell } from 'lucide-react'
 
 export default function PushNotificationPrompt() {
   const { notificationPermission, requestPermission } = usePushNotifications()
@@ -52,7 +52,7 @@ export default function PushNotificationPrompt() {
 
         <div className="flex items-start gap-4 mb-4">
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-            <span className="text-2xl">🔔</span>
+            <Bell className="w-6 h-6 text-primary" />
           </div>
           <div>
             <h3 className="text-foreground font-bold text-lg mb-1">
